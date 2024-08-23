@@ -19,3 +19,8 @@ variable "devops_role_arn" {
   type        = string
   description = "TODO Role used by Terraform to provision resources"
 }
+
+variable "workload_role_arn" {
+  type        = string
+  description = "Role used by Terraform to provision resources"
+}
