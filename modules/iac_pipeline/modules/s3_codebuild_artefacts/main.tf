@@ -190,7 +190,7 @@ resource "random_string" "bucket_suffix" {
 }
 
 module codepipeline_bucket {
-  source = "../../../../s3"
+  source = "../../../s3"
   bucket_name = "${lower(var.project_name)}-artefacts-${random_string.bucket_suffix.result}"
 }
 

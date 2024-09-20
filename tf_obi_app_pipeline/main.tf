@@ -9,10 +9,10 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "tf-state-20240811113441626700000001"
+    bucket         = "csob-obi-terraform-state"
+    dynamodb_table = "csob-obi-terraform-state-lock"
     key            = "obi_pipeline/devops"
     region         = "eu-central-1"
-    dynamodb_table = "obi_pipeline_state_lock"
     encrypt        = true
   }
 

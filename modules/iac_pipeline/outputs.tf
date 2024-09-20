@@ -19,11 +19,6 @@ output "codepipeline_arn" {
   description = "The ARN of the CodePipeline"
 }
 
-output "iam_arn" {
-  value       = module.codepipeline_iam_role.role_arn
-  description = "The ARN of the IAM Role used by the CodePipeline"
-}
-
 output "kms_arn" {
   value       = module.codepipeline_kms.arn
   description = "The ARN of the KMS key used in the codepipeline"

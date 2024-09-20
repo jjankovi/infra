@@ -4,8 +4,13 @@ variable "project_name" {
   type        = string
 }
 
-variable "codepipeline_iam_role_name" {
-  description = "Name of the IAM role to be used by the project"
+variable "cicd_role_name" {
+  description = "Name of CICD IAM role to be used by the project"
+  type        = string
+}
+
+variable "workload_role_arn" {
+  description = "ARN of Workload IAM role to be used by the project"
   type        = string
 }
 

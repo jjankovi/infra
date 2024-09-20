@@ -1,7 +1,7 @@
 
 resource "aws_codepipeline" "terraform_pipeline" {
 
-  name          = "${var.project_name}-pipeline"
+  name          = "${var.project_name}"
   pipeline_type = "V2"
   role_arn      = var.codepipeline_role_arn
   tags          = var.tags
@@ -41,24 +41,24 @@ resource "aws_codepipeline" "terraform_pipeline" {
     }
   }
 
-  #  trigger {
-  #    provider_type = "CodeStarSourceConnection"
-  #    git_configuration {
-  #      source_action_name = "TriggerAction"
-  #      push {
-  #        branches {
-  #          includes = ["main"]
-  #        }
-  #      }
-  #      #      pull_request {
-  #      #        events = ["CLOSED"]
-  #      #        branches {
-  #      #          includes = ["main", "foobar"]
-  #      #          excludes = ["feature/*", "issue/*"]
-  #      #        }
-  #      #      }
-  #    }
-  #  }
+  stage {
+    name = "Scan"
+
+    action {
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      version          = "1"
+      name             = "Terraform-Scan"
+      input_artifacts  = ["SourceOutput"]
+      output_artifacts = []
+      run_order        = 2
+
+      configuration = {
+        ProjectName = "${var.project_name}-scan"
+      }
+    }
+  }
 
   dynamic "stage" {
     for_each = var.target_accounts
@@ -73,18 +73,41 @@ resource "aws_codepipeline" "terraform_pipeline" {
           category         = action.value["category"]
           name             = "Action-${action.value["name"]}"
           owner            = "AWS"
-          provider         = "CodeBuild"
-          input_artifacts  = (action.value["input_artifacts"] == "SourceOutput") ? ["SourceOutput"] : ["test-${stage.value["environment"]}_${action.value["input_artifacts"]}"]
-          output_artifacts = ["test-${stage.value["environment"]}_${action.value["output_artifacts"]}"]
+          provider         = action.value["category"] == "Build" ? "CodeBuild" : "Manual"
+          input_artifacts  = action.value["input_artifacts"] == "" ? [] : (action.value["input_artifacts"] == "SourceOutput" ? ["SourceOutput"] : ["SourceOutput", "${stage.value["environment"]}_${action.value["input_artifacts"]}"])
+          output_artifacts = action.value["output_artifacts"] == "" ? [] : ["${stage.value["environment"]}_${action.value["output_artifacts"]}"]
           version          = "1"
           run_order        = index(var.stages, action.value) + 2
 
           configuration = {
-            ProjectName = "${var.project_name}-${action.value["name"]}"
-            EnvironmentVariables = jsonencode([
+            CustomData = action.value["category"] == "Approval" ? "Please verify the terraform plan output" : null
+
+            ProjectName = action.value["category"] == "Build" ? "${var.project_name}-${action.value["name"]}" : null
+            PrimarySource = action.value["category"] == "Build" ? "SourceOutput" : null
+            EnvironmentVariables = action.value["category"] == "Approval" ? null : jsonencode([
+              {
+                name  = "ENVIRONMENT"
+                value = "${stage.value["environment"]}"
+                type  = "PLAINTEXT"
+              },
               {
                 name  = "WORKLOAD_ROLE_ARN"
                 value = "${stage.value["workload_role"]}"
+                type  = "PLAINTEXT"
+              },
+              {
+                name  = "TF_STATE_BUCKET"
+                value = "${stage.value["state_bucket"]}"
+                type  = "PLAINTEXT"
+              },
+              {
+                name  = "TF_STATE_KEY"
+                value = "${var.project_name}.${stage.value["environment"]}.terraform.tfstate"
+                type  = "PLAINTEXT"
+              },
+              {
+                name  = "TF_DYNAMODB_TABLE"
+                value = "${stage.value["state_lock_table"]}"
                 type  = "PLAINTEXT"
               },
             ])

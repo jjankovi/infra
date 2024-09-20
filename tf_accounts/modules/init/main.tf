@@ -26,7 +26,7 @@ data "aws_iam_policy_document" "bucket_access_from_workload_account" {
   statement {
     principals {
       type        = "AWS"
-      identifiers = [var.workload_role_arn]
+      identifiers = [var.workload_role_arn, var.workload_cicd_role_arn]
     }
 
     actions = [
@@ -68,7 +68,7 @@ data "aws_iam_policy_document" "lock_table_access_from_workload_account" {
   statement {
     principals {
       type        = "AWS"
-      identifiers = [var.workload_role_arn]
+      identifiers = [var.workload_role_arn,var.workload_cicd_role_arn]
     }
 
     actions = [

@@ -1,31 +1,4 @@
 
-resource "aws_iam_role" "codepipeline_role" {
-  name               = var.codepipeline_iam_role_name
-  tags               = var.tags
-  assume_role_policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Principal": {
-                "Service": "codepipeline.amazonaws.com"
-            },
-            "Action": "sts:AssumeRole"
-        },
-        {
-            "Effect": "Allow",
-            "Principal": {
-                "Service": "codebuild.amazonaws.com"
-            },
-            "Action": "sts:AssumeRole"
-        }
-    ]
-}
-EOF
-  path               = "/"
-}
-
 resource "aws_iam_policy" "codepipeline_policy" {
   name        = "${var.project_name}-codepipeline-policy"
   description = "Policy to allow codepipeline to execute"
@@ -39,7 +12,7 @@ resource "aws_iam_policy" "codepipeline_policy" {
       "Action": [
         "sts:*"
       ],
-      "Resource": "arn:aws:iam::396608792866:role/WorkloadRole"
+      "Resource": "${var.workload_role_arn}"
     },
     {
       "Effect":"Allow",
@@ -100,6 +73,6 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "codepipeline_role_attach" {
-  role       = aws_iam_role.codepipeline_role.name
+  role       = var.cicd_role_name
   policy_arn = aws_iam_policy.codepipeline_policy.arn
 }

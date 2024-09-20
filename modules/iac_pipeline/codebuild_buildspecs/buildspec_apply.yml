@@ -22,9 +22,8 @@ phases:
       - aws configure set aws_secret_access_key ${sts[1]}
       - aws configure set aws_session_token ${sts[2]}
 
-      - terraform init
-      - terraform validate
+      - terraform init -backend-config="bucket=$TF_STATE_BUCKET" -backend-config="key=$TF_STATE_KEY" -backend-config="dynamodb_table=$TF_DYNAMODB_TABLE"
 
   build:
     commands:
-      - terraform apply -auto-approve
+      - terraform apply -auto-approve ../01/tfplan
