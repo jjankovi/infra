@@ -1,0 +1,7 @@
+1. manualne (asi rucne klikanim) vytvorim Terraform Role v Devops aj vo Workloadoch
+2. pustim tf_accounts (najprv rucne, potom to naparujem na s3 a dynamo) - pre vsetky 4 accounty
+3. pustim tf_devops_init - vytvorenie CICD pipeline role
+4. pustim tf_workload_init - vo vsetkych 3 workloadoch accountoch - vytvorenie CICD workload role
+5. pridam roly zo 4.bodu mat pravo na terraform state z bodu 2
+6. pustim tf_obi_iac_pipeline
+7. pustim tf_obi_app_pipeline
