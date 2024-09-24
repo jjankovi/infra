@@ -14,6 +14,27 @@ variable "source_repo_id" {
   type        = string
 }
 
+variable "cicd_role_name" {
+  description = "Name of CICD IAM role to be used by the project"
+  type        = string
+}
+
+variable "cicd_role_arn" {
+  description = "ARN of CICD IAM role to be used by the project"
+  type        = string
+}
+
+variable "workload_role_arn" {
+  description = "ARN of Workload IAM role to be used by the project"
+  type        = string
+}
+
+variable "kms_enabled" {
+  description = "Flag if kms encryption is enabled in all resources"
+  type        = bool
+  default     = true
+}
+
 variable "source_repo_branch" {
   description = "Default branch in the Source repo for which CodePipeline needs to be configured"
   type        = string
@@ -23,6 +44,11 @@ variable "environment" {
   description = "Environment in which the script is run. Eg: devops, dev, prod, etc"
   type        = string
   default     = "devops"
+}
+
+variable "stage_input" {
+  description = "Tags to be attached to the CodePipeline"
+  type        = list(map(any))
 }
 
 variable "build_projects" {

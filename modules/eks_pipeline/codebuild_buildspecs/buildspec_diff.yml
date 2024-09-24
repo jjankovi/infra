@@ -1,0 +1,34 @@
+
+version: 0.2
+phases:
+  install:
+    commands:
+      - wget https://releases.hashicorp.com/terraform/1.9.4/terraform_1.9.4_linux_amd64.zip
+      - unzip terraform_1.9.4_linux_amd64.zip
+      - sudo mv terraform /bin
+      - rm terraform_1.9.4_linux_amd64.zip
+
+  pre_build:
+    commands:
+      - echo "Assuming role $WORKLOAD_ROLE_ARN"
+      - >
+        sts=$(aws sts assume-role 
+        --role-arn "$WORKLOAD_ROLE_ARN" 
+        --role-session-name "test" 
+        --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' 
+        --output text)
+      - sts=($sts)
+      - aws configure set aws_access_key_id ${sts[0]}
+      - aws configure set aws_secret_access_key ${sts[1]}
+      - aws configure set aws_session_token ${sts[2]}
+
+      - terraform init -backend-config="bucket=$TF_STATE_BUCKET" -backend-config="key=$TF_STATE_KEY" -backend-config="dynamodb_table=$TF_DYNAMODB_TABLE"
+      - terraform validate
+
+  build:
+    commands:
+      - terraform plan -var-file="env/$ENVIRONMENT/$ENVIRONMENT.tfvars" -out=tfplan
+
+artifacts:
+  files:
+    - tfplan

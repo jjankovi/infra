@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+      - docker pull $ECR_REPO_URL:builder || true
+      - docker pull $ECR_REPO_URL:latest || true
+  build:
+    commands:
+      - docker build -t $ECR_REPO_URL:builder --target builder --cache-from $ECR_REPO_URL:builder .
+      - docker build -t $ECR_REPO_URL:latest --cache-from $ECR_REPO_URL:builder --cache-from $ECR_REPO_URL:latest .
+  post_build:
+    commands:
+      - docker push $ECR_REPO_URL:latest
+      - docker push $ECR_REPO_URL:builder

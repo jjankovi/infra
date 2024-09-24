@@ -1,0 +1,17 @@
+
+version: 0.2
+phases:
+  install:
+    commands:
+      - curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+      - pip install checkov
+
+  pre_build:
+    commands:
+      - echo "Running Terraform Lint (TFLint)"
+      - tflint
+      - echo "Running Checkov for Terraform static analysis"
+      - checkov -d .
+  build:
+    commands:
+      - echo "Terraform static analysis completed!"
