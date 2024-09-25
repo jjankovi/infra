@@ -1,7 +1,50 @@
+POSTUP PRE CSOB
+
+DEVOPS
 1. manualne (asi rucne klikanim) vytvorim Terraform Role v Devops aj vo Workloadoch
 2. pustim tf_accounts (najprv rucne, potom to naparujem na s3 a dynamo) - pre vsetky 4 accounty
 3. pustim tf_devops_init - vytvorenie CICD pipeline role
 4. pustim tf_workload_init - vo vsetkych 3 workloadoch accountoch - vytvorenie CICD workload role
-5. pridam roly zo 4.bodu mat pravo na terraform state z bodu 2
+5. pridam roly zo 4.bodu mat pravo na terraform state z bodu 2 (workload_roles)
 6. pustim tf_obi_iac_pipeline
 7. pustim tf_obi_app_pipeline
+
+
+
+TODO JJA
+
+GENERAL
+- aktualne dynamodb nie je sifrovany - lebo by som musel pridat pravo na KMS crossaccount
+- mozno vytvorim este jeden account, aby som vyskusal aj DEV,UAT deployment
+
+
+OBI IAC pipeline
+- caching v codebuild (aby bol rychlejsi terraform - providery)
+- terraform validate (lint, checkov ...)
+
+
+OBI APP pipeline
+- EKS
+  - vyskusat ci padnute testy zapricinia padnuty build
+  - zapracovat nasadenie do EKS (helm chart)
+  - staticky scan (checkov?)
+  - zapracovat junit reports
+- RDS
+  - zakladne nastavenie mam, treba dalsie
+
+
+OBI
+- EKS
+  - vyrobit si NAT instance (cez EC2 micro aby zadarmo) potom pojde aj fargate profile
+  - este doriesit instalaciu alb ingress controler (to je pod) - ma sa instalovat pomocou helm, manualne
+    mi to islo, ale cez terraform helm nie - musim znovu skusit
+  - neslo mi nastartovat ALB - nieco s OIDC - ked doriesim tak prva jednoducha verzia je hotova
+  - nasledne vyskusat helm chart
+- RDS
+  - este som ani nezacal
+
+
+
+
+
+

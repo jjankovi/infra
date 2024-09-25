@@ -1,0 +1,1 @@
+workload_role_arn = "arn:aws:iam::396608792866:role/WorkloadRole"

@@ -1,7 +1,0 @@
-- bootstraping
-    - WorkloadRole pravo na terraform S3 bucket (urobil som manualne) (oba smery)
-    - WorkloadRole pravo na terraform dynamo table (urobil som manualne)  (oba smery)
-- aktualne dynamodb nie je sifrovany - lebo by som musel pridat pravo na KMS crossaccount
-- terraform validate (lint, checkov ...)
-- terraform manual approve
-- IAM roles, admin iam user do devops account, a pomocou assume (v provider) pouzijem WorkloadRole (neviem dobry nazov vymysliet)

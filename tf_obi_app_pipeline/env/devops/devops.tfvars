@@ -1,0 +1,1 @@
+devops_role_arn = "arn:aws:iam::058264153756:role/DevopsTerraformRole"

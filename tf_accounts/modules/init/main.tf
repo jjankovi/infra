@@ -26,7 +26,7 @@ data "aws_iam_policy_document" "bucket_access_from_workload_account" {
   statement {
     principals {
       type        = "AWS"
-      identifiers = [var.workload_role_arn, var.workload_cicd_role_arn]
+      identifiers = var.workload_roles
     }
 
     actions = [
@@ -53,6 +53,10 @@ resource "aws_dynamodb_table" "state_lock_table" {
     enabled = false
   }
 
+  point_in_time_recovery {
+    enabled = true
+  }
+
   attribute {
     name = "LockID"
     type = "S"
@@ -68,7 +72,7 @@ data "aws_iam_policy_document" "lock_table_access_from_workload_account" {
   statement {
     principals {
       type        = "AWS"
-      identifiers = [var.workload_role_arn,var.workload_cicd_role_arn]
+      identifiers = var.workload_roles
     }
 
     actions = [

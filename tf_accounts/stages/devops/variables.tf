@@ -14,13 +14,12 @@ variable "state_lock_table" {
   description = "TODO"
 }
 
-
 variable "devops_role_arn" {
   type        = string
   description = "TODO Role used by Terraform to provision resources"
 }
 
-variable "workload_role_arn" {
-  type        = string
-  description = "Role used by Terraform to provision resources"
+variable "workload_roles" {
+  type        = list(string)
+  description = "TODO"
 }

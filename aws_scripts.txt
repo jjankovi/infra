@@ -1,0 +1,12 @@
+aws sts assume-role --role-arn "arn:aws:iam::396608792866:role/WorkloadRole" --role-session-name Dev-Session
+
+SET AWS_ACCESS_KEY_ID=
+SET AWS_SECRET_ACCESS_KEY=
+SET AWS_SESSION_TOKEN=
+
+aws sts get-caller-identity
+
+aws eks update-kubeconfig --region eu-central-1 --name obi-dev-cluster
+
+
+docker run -v /c/Users/jankovj/Documents/projekty/csob-aws/infra/tf_accounts:/tf bridgecrew/checkov --quiet --directory /tf

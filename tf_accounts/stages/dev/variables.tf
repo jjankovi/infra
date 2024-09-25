@@ -20,13 +20,8 @@ variable "devops_role_arn" {
   description = "Role used by Terraform to provision resources"
 }
 
-variable "workload_role_arn" {
-  type        = string
-  description = "Role used by Terraform to provision resources"
-}
-
-variable "workload_cicd_role_arn" {
-  type        = string
-  description = "Role used by CICD to provision resources"
+variable "workload_roles" {
+  type        = list(string)
+  description = "TODO"
 }
 

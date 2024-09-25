@@ -4,11 +4,6 @@ variable "region" {
   description = "AWS region where the resources are provisioned"
 }
 
-variable "devops_role_arn" {
-  type        = string
-  description = "Role used by Terraform to provision resources"
-}
-
 variable "workload_role_arn" {
   type        = string
   description = "Role used by Terraform to provision resources"
