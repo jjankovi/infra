@@ -10,16 +10,13 @@ module "pipeline" {
   cicd_role_name             = data.terraform_remote_state.devops_tier0.outputs.cicd_role_name
   workload_role_arn          = data.terraform_remote_state.dev_tier0.outputs.cicd_role_arn
   stage_input = [
-    #    { name = "diff", category = "Build", input_artifacts = "SourceOutput", output_artifacts = "DiffOutput" },
+        { name = "diff", category = "Build", input_artifacts = "SourceOutput", output_artifacts = "DiffOutput" }
     #    { name = "approve", category = "Approval", input_artifacts = "", output_artifacts = "" },
     #    { name = "apply", category = "Build", input_artifacts = "DiffOutput", output_artifacts = "" }
   ]
   target_accounts = [
     {
       environment      = "dev",
-      account          = "396608792866",
-      state_bucket     = "csob-dev-terraform-state",
-      state_lock_table = "arn:aws:dynamodb:eu-central-1:058264153756:table/csob-dev-terraform-state-lock",
       workload_role    = data.terraform_remote_state.dev_tier0.outputs.cicd_role_arn
     }
   ]

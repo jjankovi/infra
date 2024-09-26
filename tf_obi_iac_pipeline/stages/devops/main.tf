@@ -17,7 +17,6 @@ module "pipeline" {
   target_accounts = [
     {
       environment      = "dev",
-      account          = "396608792866",
       state_bucket     = "csob-dev-terraform-state",
       state_lock_table = "arn:aws:dynamodb:eu-central-1:058264153756:table/csob-dev-terraform-state-lock",
       workload_role    = data.terraform_remote_state.dev_tier0.outputs.cicd_role_arn
