@@ -3,11 +3,10 @@ version: 0.2
 phases:
   install:
     commands:
-      - wget https://releases.hashicorp.com/terraform/1.9.4/terraform_1.9.4_linux_amd64.zip
-      - unzip terraform_1.9.4_linux_amd64.zip
-      - sudo mv terraform /bin
-      - rm terraform_1.9.4_linux_amd64.zip
-
+      - curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl
+      - chmod +x ./kubectl && mv -f ./kubectl /usr/local/bin/kubectl
+      - wget https://storage.googleapis.com/kubernetes-helm/helm-v2.14.0-linux-amd64.tar.gz -O helm.tar.gz; tar -xzf helm.tar.gz
+      - chmod +x ./linux-amd64/helm && mv ./linux-amd64/helm /usr/local/bin/helm
   pre_build:
     commands:
       - echo "Assuming role $WORKLOAD_ROLE_ARN"
@@ -21,14 +20,7 @@ phases:
       - aws configure set aws_access_key_id ${sts[0]}
       - aws configure set aws_secret_access_key ${sts[1]}
       - aws configure set aws_session_token ${sts[2]}
-
-      - terraform init -backend-config="bucket=$TF_STATE_BUCKET" -backend-config="key=$TF_STATE_KEY" -backend-config="dynamodb_table=$TF_DYNAMODB_TABLE"
-      - terraform validate
-
+      - aws eks --region eu-central-1 update-kubeconfig --name $EKS_CLUSTER
   build:
     commands:
-      - terraform plan -var-file="env/$ENVIRONMENT/$ENVIRONMENT.tfvars" -out=tfplan
-
-artifacts:
-  files:
-    - tfplan
+      - helm upgrade -i obi k8s

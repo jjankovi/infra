@@ -41,24 +41,24 @@ resource "aws_codepipeline" "terraform_pipeline" {
     }
   }
 
-#  stage {
-#    name = "Scan"
-#
-#    action {
-#      category         = "Build"
-#      owner            = "AWS"
-#      provider         = "CodeBuild"
-#      version          = "1"
-#      name             = "Terraform-Scan"
-#      input_artifacts  = ["SourceOutput"]
-#      output_artifacts = []
-#      run_order        = 2
-#
-#      configuration = {
-#        ProjectName = "${var.project_name}-scan"
-#      }
-#    }
-#  }
+  stage {
+    name = "Scan"
+
+    action {
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      version          = "1"
+      name             = "Terraform-Scan"
+      input_artifacts  = ["SourceOutput"]
+      output_artifacts = []
+      run_order        = 2
+
+      configuration = {
+        ProjectName = "${var.project_name}-scan"
+      }
+    }
+  }
 
   stage {
     name = "Build"
@@ -91,62 +91,52 @@ resource "aws_codepipeline" "terraform_pipeline" {
     }
   }
 
-#  dynamic "stage" {
-#    for_each = var.target_accounts
-#
-#    content {
-#      name = "Deployment-${stage.value["environment"]}"
-#
-#      dynamic "action" {
-#        for_each = var.stages
-#
-#        content {
-#          category         = action.value["category"]
-#          name             = "Action-${action.value["name"]}"
-#          owner            = "AWS"
-#          provider         = action.value["category"] == "Build" ? "CodeBuild" : "Manual"
-#          input_artifacts  = action.value["input_artifacts"] == "" ? [] : (action.value["input_artifacts"] == "SourceOutput" ? ["SourceOutput"] : ["SourceOutput", "${stage.value["environment"]}_${action.value["input_artifacts"]}"])
-#          output_artifacts = action.value["output_artifacts"] == "" ? [] : ["${stage.value["environment"]}_${action.value["output_artifacts"]}"]
-#          version          = "1"
-#          run_order        = index(var.stages, action.value) + 2
-#
-#          configuration = {
-#            CustomData = action.value["category"] == "Approval" ? "Please verify the terraform plan output" : null
-#
-#            ProjectName = action.value["category"] == "Build" ? "${var.project_name}-${action.value["name"]}" : null
-#            PrimarySource = action.value["category"] == "Build" ? "SourceOutput" : null
-#            EnvironmentVariables = action.value["category"] == "Approval" ? null : jsonencode([
-#              {
-#                name  = "ENVIRONMENT"
-#                value = "${stage.value["environment"]}"
-#                type  = "PLAINTEXT"
-#              },
-#              {
-#                name  = "WORKLOAD_ROLE_ARN"
-#                value = "${stage.value["workload_role"]}"
-#                type  = "PLAINTEXT"
-#              },
-#              {
-#                name  = "TF_STATE_BUCKET"
-#                value = "${stage.value["state_bucket"]}"
-#                type  = "PLAINTEXT"
-#              },
-#              {
-#                name  = "TF_STATE_KEY"
-#                value = "${var.project_name}.${stage.value["environment"]}.terraform.tfstate"
-#                type  = "PLAINTEXT"
-#              },
-#              {
-#                name  = "TF_DYNAMODB_TABLE"
-#                value = "${stage.value["state_lock_table"]}"
-#                type  = "PLAINTEXT"
-#              },
-#            ])
-#          }
-#        }
-#      }
-#    }
-#
-#  }
+  dynamic "stage" {
+    for_each = var.target_accounts
+
+    content {
+      name = "Deployment-${stage.value["environment"]}"
+
+      dynamic "action" {
+        for_each = var.stages
+
+        content {
+          category         = action.value["category"]
+          name             = "Action-${action.value["name"]}"
+          owner            = "AWS"
+          provider         = action.value["category"] == "Build" ? "CodeBuild" : "Manual"
+          input_artifacts  = action.value["input_artifacts"] == "" ? [] : (action.value["input_artifacts"] == "SourceOutput" ? ["SourceOutput"] : ["SourceOutput", "${stage.value["environment"]}_${action.value["input_artifacts"]}"])
+          output_artifacts = action.value["output_artifacts"] == "" ? [] : ["${stage.value["environment"]}_${action.value["output_artifacts"]}"]
+          version          = "1"
+          run_order        = index(var.stages, action.value) + 2
+
+          configuration = {
+            CustomData = action.value["category"] == "Approval" ? "Please verify the terraform plan output" : null
+
+            ProjectName = action.value["category"] == "Build" ? "${var.project_name}-${action.value["name"]}" : null
+            PrimarySource = action.value["category"] == "Build" ? "SourceOutput" : null
+            EnvironmentVariables = action.value["category"] == "Approval" ? null : jsonencode([
+              {
+                name  = "ENVIRONMENT"
+                value = "${stage.value["environment"]}"
+                type  = "PLAINTEXT"
+              },
+              {
+                name  = "WORKLOAD_ROLE_ARN"
+                value = "${stage.value["workload_role"]}"
+                type  = "PLAINTEXT"
+              },
+              {
+                name  = "EKS_CLUSTER"
+                value = "obi-dev-cluster" // TODO
+                type  = "PLAINTEXT"
+              }
+            ])
+          }
+        }
+      }
+    }
+
+  }
 
 }

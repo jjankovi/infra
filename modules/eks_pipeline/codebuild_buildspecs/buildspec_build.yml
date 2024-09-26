@@ -14,3 +14,9 @@ phases:
     commands:
       - docker push $ECR_REPO_URL:latest
       - docker push $ECR_REPO_URL:builder
+reports:
+  SurefireReports:
+    base-directory: 'reports'
+    files:
+      - '**/*'
+
