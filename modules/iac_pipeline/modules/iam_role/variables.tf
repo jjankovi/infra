@@ -9,9 +9,9 @@ variable "cicd_role_name" {
   type        = string
 }
 
-variable "workload_role_arn" {
-  description = "ARN of Workload IAM role to be used by the project"
-  type        = string
+variable "workload_roles" {
+  description = "IAM roles which are used to deploy application IAC "
+  type        = list(string)
 }
 
 variable "tags" {

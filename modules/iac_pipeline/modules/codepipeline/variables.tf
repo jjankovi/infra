@@ -52,5 +52,10 @@ variable "stages" {
 
 variable "target_accounts" {
   description = "Accounts where CodePipeline will install resources to"
-  type        = list(map(any))
+  type = list(object({
+    environment  = string
+    state_bucket = string
+    state_lock_table = string
+    workload_role = string
+  }))
 }
