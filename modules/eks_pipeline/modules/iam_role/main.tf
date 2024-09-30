@@ -1,3 +1,15 @@
+resource "aws_iam_policy" "allow_sts_assume_deployer_role" {
+  policy = jsonencode({
+    Version   = "2012-10-17"
+    Statement = [
+      for role in var.deployer_roles : {
+        Effect = "Allow"
+        Action = "sts:AssumeRole"
+        Resource = role
+      }
+    ]
+  })
+}
 
 resource "aws_iam_policy" "codepipeline_policy" {
   name        = "${var.project_name}-codepipeline-policy"
@@ -7,13 +19,6 @@ resource "aws_iam_policy" "codepipeline_policy" {
 {
   "Version": "2012-10-17",
   "Statement": [
-    {
-      "Effect":"Allow",
-      "Action": [
-        "sts:*"
-      ],
-      "Resource": "${var.workload_role_arn}"
-    },
     {
       "Effect":"Allow",
       "Action": [
@@ -75,4 +80,9 @@ EOF
 resource "aws_iam_role_policy_attachment" "codepipeline_role_attach" {
   role       = var.cicd_role_name
   policy_arn = aws_iam_policy.codepipeline_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "sts_assume_deployer_role_attach" {
+  role       = var.cicd_role_name
+  policy_arn = aws_iam_policy.allow_sts_assume_deployer_role.arn
 }

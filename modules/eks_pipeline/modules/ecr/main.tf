@@ -31,3 +31,35 @@ resource "aws_iam_role_policy_attachment" "codebuild_policy_attach" {
   role       = var.cicd_role_name
   policy_arn = aws_iam_policy.ecr_repo_policy.arn
 }
+
+data "aws_iam_policy_document" "workload_accounts_policy_doc" {
+  statement {
+    sid    = "new policy"
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = var.workload_accounts
+    }
+
+    actions = [
+      "ecr:GetAuthorizationToken",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:GetRepositoryPolicy",
+      "ecr:DescribeRepositories",
+      "ecr:ListImages",
+      "ecr:DescribeImages",
+      "ecr:BatchGetImage",
+      "ecr:GetLifecyclePolicy",
+      "ecr:GetLifecyclePolicyPreview",
+      "ecr:ListTagsForResource",
+      "ecr:DescribeImageScanFindings"
+    ]
+  }
+}
+
+resource "aws_ecr_repository_policy" "workload_accounts_policy" {
+  repository = aws_ecr_repository.ecr_repo.name
+  policy     = data.aws_iam_policy_document.workload_accounts_policy_doc.json
+}

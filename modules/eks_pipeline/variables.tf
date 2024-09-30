@@ -1,32 +1,12 @@
-
 variable "project_name" {
   description = "Unique name for this project"
   type        = string
 }
 
-variable "source_repo_connection_arn" {
-  description = "ARN of CodeStarConnection used as source repo for"
+variable "environment" {
+  description = "Environment in which the script is run. Eg: devops, dev, prod, etc"
   type        = string
-}
-
-variable "source_repo_id" {
-  description = "Source repo id"
-  type        = string
-}
-
-variable "cicd_role_name" {
-  description = "Name of CICD IAM role to be used by the project"
-  type        = string
-}
-
-variable "cicd_role_arn" {
-  description = "ARN of CICD IAM role to be used by the project"
-  type        = string
-}
-
-variable "workload_role_arn" {
-  description = "ARN of Workload IAM role to be used by the project"
-  type        = string
+  default     = "devops"
 }
 
 variable "kms_enabled" {
@@ -35,15 +15,21 @@ variable "kms_enabled" {
   default     = true
 }
 
-variable "source_repo_branch" {
-  description = "Default branch in the Source repo for which CodePipeline needs to be configured"
-  type        = string
+variable "source_repo" {
+  description = "Git repo used as source for CodePipeline"
+  type = object({
+    id  = string
+    connection_arn  = string
+    branch = string
+  })
 }
 
-variable "environment" {
-  description = "Environment in which the script is run. Eg: devops, dev, prod, etc"
-  type        = string
-  default     = "devops"
+variable "cicd_role" {
+  description = "CICD IAM role to be used by the project"
+  type = object({
+    name  = string
+    arn  = string
+  })
 }
 
 variable "stage_input" {
@@ -58,7 +44,11 @@ variable "build_projects" {
 
 variable "target_accounts" {
   description = "Accounts where CodePipeline will install resources to"
-  type        = list(map(any))
+  type = list(object({
+    environment  = string
+    account = string
+    deployer_role = string
+  }))
 }
 
 variable "builder_compute_type" {

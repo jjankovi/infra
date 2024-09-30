@@ -5,14 +5,14 @@ phases:
     commands:
       - curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl
       - chmod +x ./kubectl && mv -f ./kubectl /usr/local/bin/kubectl
-      - wget https://storage.googleapis.com/kubernetes-helm/helm-v2.14.0-linux-amd64.tar.gz -O helm.tar.gz; tar -xzf helm.tar.gz
+      - wget https://get.helm.sh/helm-v3.16.1-linux-amd64.tar.gz -O helm.tar.gz; tar -xzf helm.tar.gz
       - chmod +x ./linux-amd64/helm && mv ./linux-amd64/helm /usr/local/bin/helm
   pre_build:
     commands:
-      - echo "Assuming role $WORKLOAD_ROLE_ARN"
+      - echo "Assuming role $DEPLOYER_ROLE_ARN"
       - >
         sts=$(aws sts assume-role 
-        --role-arn "$WORKLOAD_ROLE_ARN" 
+        --role-arn "$DEPLOYER_ROLE_ARN" 
         --role-session-name "test" 
         --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' 
         --output text)
@@ -20,7 +20,7 @@ phases:
       - aws configure set aws_access_key_id ${sts[0]}
       - aws configure set aws_secret_access_key ${sts[1]}
       - aws configure set aws_session_token ${sts[2]}
-      - aws eks --region eu-central-1 update-kubeconfig --name obi-dev-cluster
+      - aws eks --region eu-central-1 update-kubeconfig --name $EKS_CLUSTER
   build:
     commands:
-      - helm upgrade -i obi k8s
+      - helm upgrade --namespace obi-ns obi k8s -f k8s/values.yaml -f k8s/values-$ENVIRONMENT.yaml --install

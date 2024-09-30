@@ -1,7 +1,8 @@
 module "ecr_repo" {
   source                = "./modules/ecr"
   project_name = var.project_name
-  cicd_role_name = var.cicd_role_name
+  cicd_role_name = var.cicd_role.name
+  workload_accounts = tolist([for target_account in var.target_accounts : target_account.account])
 }
 
 #Module for creating a new S3 bucket for storing pipeline artifacts
@@ -10,7 +11,7 @@ module "s3_artifacts_bucket" {
   project_name          = var.project_name
   kms_key_arn           = module.codepipeline_kms.arn
   kms_enabled = var.kms_enabled
-  codepipeline_role_arn = var.cicd_role_arn
+  codepipeline_role_arn = var.cicd_role.arn
   tags = {
     Project_Name = var.project_name
     Environment  = var.environment
@@ -37,7 +38,7 @@ module "codebuild_terraform" {
   source = "./modules/codebuild"
 
   project_name                        = var.project_name
-  role_arn                            = var.cicd_role_arn
+  role_arn                            = var.cicd_role.arn
   s3_bucket_name                      = module.s3_artifacts_bucket.bucket
   s3_codebuild_templates_bucket_name  = module.s3_codebuild_templates_bucket.bucket
   build_projects                      = var.build_projects
@@ -58,7 +59,7 @@ module "codebuild_terraform" {
 
 module "codepipeline_kms" {
   source                = "./modules/kms"
-  codepipeline_role_arn = var.cicd_role_arn
+  codepipeline_role_arn = var.cicd_role.arn
   tags = {
     Project_Name = var.project_name
     Environment  = var.environment
@@ -71,9 +72,9 @@ module "codepipeline_kms" {
 module "codepipeline_iam_role" {
   source                     = "./modules/iam_role"
   project_name               = var.project_name
-  cicd_role_name = var.cicd_role_name
-  workload_role_arn = var.workload_role_arn
-  codestar_connection_arn    = var.source_repo_connection_arn
+  cicd_role_name = var.cicd_role.name
+  deployer_roles = tolist([for role in var.target_accounts : role.deployer_role])
+  codestar_connection_arn    = var.source_repo.connection_arn
   kms_key_arn                = module.codepipeline_kms.arn
   s3_bucket_arn              = module.s3_artifacts_bucket.arn
   tags = {
@@ -93,12 +94,12 @@ module "codepipeline_terraform" {
   source = "./modules/codepipeline"
 
   project_name            = var.project_name
-  codestar_connection_arn = var.source_repo_connection_arn
-  source_repo_id          = var.source_repo_id
-  source_repo_branch      = var.source_repo_branch
+  codestar_connection_arn = var.source_repo.connection_arn
+  source_repo_id          = var.source_repo.id
+  source_repo_branch      = var.source_repo.branch
   ecr_repo                = module.ecr_repo.ecr_repo_url
   s3_bucket_name          = module.s3_artifacts_bucket.bucket
-  codepipeline_role_arn   = var.cicd_role_arn
+  codepipeline_role_arn   = var.cicd_role.arn
   stages                  = var.stage_input
   target_accounts         = var.target_accounts
   kms_key_arn             = module.codepipeline_kms.arn

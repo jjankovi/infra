@@ -122,13 +122,13 @@ resource "aws_codepipeline" "terraform_pipeline" {
                 type  = "PLAINTEXT"
               },
               {
-                name  = "WORKLOAD_ROLE_ARN"
-                value = "${stage.value["workload_role"]}"
+                name  = "DEPLOYER_ROLE_ARN"
+                value = "${stage.value["deployer_role"]}"
                 type  = "PLAINTEXT"
               },
               {
                 name  = "EKS_CLUSTER"
-                value = "obi-dev-cluster" // TODO
+                value = "${var.project_name}-${stage.value["environment"]}-cluster"
                 type  = "PLAINTEXT"
               }
             ])
