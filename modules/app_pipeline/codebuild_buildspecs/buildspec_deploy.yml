@@ -7,9 +7,9 @@ phases:
       - chmod +x ./kubectl && mv -f ./kubectl /usr/local/bin/kubectl
       - wget https://get.helm.sh/helm-v3.16.1-linux-amd64.tar.gz -O helm.tar.gz; tar -xzf helm.tar.gz
       - chmod +x ./linux-amd64/helm && mv ./linux-amd64/helm /usr/local/bin/helm
-      - helm plugin install https://github.com/databus23/helm-diff
   pre_build:
     commands:
+      - export IMAGE_TAG=$(cat ../01/image_tag.txt)
       - echo "Assuming role $DEPLOYER_ROLE_ARN"
       - >
         sts=$(aws sts assume-role 
@@ -24,4 +24,4 @@ phases:
       - aws eks --region eu-central-1 update-kubeconfig --name $EKS_CLUSTER
   build:
     commands:
-      - helm diff upgrade --namespace obi-ns obi k8s -f k8s/values.yaml -f k8s/values-$ENVIRONMENT.yaml --no-color --allow-unreleased
+      - helm upgrade --namespace obi-ns obi k8s -f k8s/values.yaml -f k8s/values-$ENVIRONMENT.yaml --set image.tag=$IMAGE_TAG --install

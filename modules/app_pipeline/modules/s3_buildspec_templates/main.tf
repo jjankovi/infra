@@ -46,6 +46,6 @@ resource "aws_s3_object" "buildspec_validate" {
   key          = "buildspec_${each.key}.yml"
   content_type = "text/plain"
 
-  source       = "../../../modules/eks_pipeline/codebuild_buildspecs/buildspec_${each.key}.yml"
-  etag         = filemd5("../../../modules/eks_pipeline/codebuild_buildspecs/buildspec_${each.key}.yml")
+  source       = "../../../modules/app_pipeline/codebuild_buildspecs/buildspec_${each.key}.yml"
+  etag         = filemd5("../../../modules/app_pipeline/codebuild_buildspecs/buildspec_${each.key}.yml")
 }

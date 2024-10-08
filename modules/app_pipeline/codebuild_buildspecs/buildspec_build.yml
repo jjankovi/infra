@@ -9,11 +9,18 @@ phases:
   build:
     commands:
       - docker build -t $ECR_REPO_URL:builder --target builder --cache-from $ECR_REPO_URL:builder .
-      - docker build -t $ECR_REPO_URL:latest --cache-from $ECR_REPO_URL:builder --cache-from $ECR_REPO_URL:latest .
+      - docker build -t $ECR_REPO_URL:latest -t $ECR_REPO_URL:$CODEBUILD_BUILD_NUMBER --cache-from $ECR_REPO_URL:builder --cache-from $ECR_REPO_URL:latest .
+      - echo "$CODEBUILD_BUILD_NUMBER" > image_tag.txt
   post_build:
     commands:
       - docker push $ECR_REPO_URL:latest
+      - docker push $ECR_REPO_URL:$CODEBUILD_BUILD_NUMBER
       - docker push $ECR_REPO_URL:builder
+
+artifacts:
+  files:
+    - image_tag.txt
+
 reports:
   SurefireReports:
     base-directory: 'reports'

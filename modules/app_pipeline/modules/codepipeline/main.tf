@@ -41,24 +41,24 @@ resource "aws_codepipeline" "terraform_pipeline" {
     }
   }
 
-  stage {
-    name = "Scan"
-
-    action {
-      category         = "Build"
-      owner            = "AWS"
-      provider         = "CodeBuild"
-      version          = "1"
-      name             = "Terraform-Scan"
-      input_artifacts  = ["SourceOutput"]
-      output_artifacts = []
-      run_order        = 2
-
-      configuration = {
-        ProjectName = "${var.project_name}-scan"
-      }
-    }
-  }
+#  stage {
+#    name = "Scan"
+#
+#    action {
+#      category         = "Build"
+#      owner            = "AWS"
+#      provider         = "CodeBuild"
+#      version          = "1"
+#      name             = "Terraform-Scan"
+#      input_artifacts  = ["SourceOutput"]
+#      output_artifacts = []
+#      run_order        = 2
+#
+#      configuration = {
+#        ProjectName = "${var.project_name}-scan"
+#      }
+#    }
+#  }
 
   stage {
     name = "Build"
@@ -70,7 +70,7 @@ resource "aws_codepipeline" "terraform_pipeline" {
       version          = "1"
       name             = "App-Build"
       input_artifacts  = ["SourceOutput"]
-      output_artifacts = []
+      output_artifacts = ["BuildOutput"]
       run_order        = 2
 
       configuration = {
@@ -105,7 +105,7 @@ resource "aws_codepipeline" "terraform_pipeline" {
           name             = "Action-${action.value["name"]}"
           owner            = "AWS"
           provider         = action.value["category"] == "Build" ? "CodeBuild" : "Manual"
-          input_artifacts  = action.value["input_artifacts"] == "" ? [] : (action.value["input_artifacts"] == "SourceOutput" ? ["SourceOutput"] : ["SourceOutput", "${stage.value["environment"]}_${action.value["input_artifacts"]}"])
+          input_artifacts  = action.value["input_artifacts"] == "" ? [] : (action.value["input_artifacts"] == "SourceOutput" ? ["SourceOutput", "BuildOutput"] : ["SourceOutput", "${stage.value["environment"]}_${action.value["input_artifacts"]}"])
           output_artifacts = action.value["output_artifacts"] == "" ? [] : ["${stage.value["environment"]}_${action.value["output_artifacts"]}"]
           version          = "1"
           run_order        = index(var.stages, action.value) + 2
@@ -136,7 +136,6 @@ resource "aws_codepipeline" "terraform_pipeline" {
         }
       }
     }
-
   }
 
 }
