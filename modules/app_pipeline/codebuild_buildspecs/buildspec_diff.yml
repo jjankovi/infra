@@ -25,4 +25,4 @@ phases:
       - aws eks --region eu-central-1 update-kubeconfig --name $EKS_CLUSTER
   build:
     commands:
-      - helm upgrade --namespace obi-ns obi k8s -f k8s/values.yaml -f k8s/values-$ENVIRONMENT.yaml --set image.tag=$IMAGE_TAG --install
+      - helm diff upgrade --namespace obi-ns obi k8s -f k8s/values.yaml -f k8s/values-$ENVIRONMENT.yaml IMAGE_TAG --no-color --allow-unreleased

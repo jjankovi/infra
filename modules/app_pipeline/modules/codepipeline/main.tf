@@ -41,24 +41,24 @@ resource "aws_codepipeline" "terraform_pipeline" {
     }
   }
 
-#  stage {
-#    name = "Scan"
-#
-#    action {
-#      category         = "Build"
-#      owner            = "AWS"
-#      provider         = "CodeBuild"
-#      version          = "1"
-#      name             = "Terraform-Scan"
-#      input_artifacts  = ["SourceOutput"]
-#      output_artifacts = []
-#      run_order        = 2
-#
-#      configuration = {
-#        ProjectName = "${var.project_name}-scan"
-#      }
-#    }
-#  }
+  stage {
+    name = "Scan"
+
+    action {
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      version          = "1"
+      name             = "Terraform-Scan"
+      input_artifacts  = ["SourceOutput"]
+      output_artifacts = []
+      run_order        = 2
+
+      configuration = {
+        ProjectName = "${var.project_name}-scan"
+      }
+    }
+  }
 
   stage {
     name = "Build"

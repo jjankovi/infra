@@ -15,8 +15,8 @@ module "pipeline" {
   }
   stage_input = [
     { name = "diff", category = "Build", input_artifacts = "SourceOutput", output_artifacts = "DiffOutput" },
-    #    { name = "approve", category = "Approval", input_artifacts = "", output_artifacts = "" },
-    #    { name = "deploy", category = "Build", input_artifacts = "SourceOutput", output_artifacts = "" }
+    { name = "approve", category = "Approval", input_artifacts = "", output_artifacts = "" },
+    { name = "deploy", category = "Build", input_artifacts = "SourceOutput", output_artifacts = "" }
   ]
   target_accounts = [
     {
