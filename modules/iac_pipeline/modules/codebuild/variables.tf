@@ -10,13 +10,13 @@ variable "role_arn" {
   default     = ""
 }
 
-variable "s3_bucket_name" {
-  description = "Name of the S3 bucket used to store the deployment artifacts"
+variable "templates_bucket" {
+  description = "Name of the S3 bucket used to store the codebuild templates"
   type        = string
 }
 
-variable "s3_codebuild_templates_bucket_name" {
-  description = "Name of the S3 bucket used to store the codebuild templates"
+variable "cache_bucket" {
+  description = "Name of the S3 bucket used to store cache"
   type        = string
 }
 
@@ -26,8 +26,11 @@ variable "tags" {
 }
 
 variable "build_projects" {
-  description = "List of Names of the CodeBuild projects to be created"
-  type        = list(string)
+  description = "Tags to be attached to the CodePipeline"
+  type = set(object({
+    name  = string
+    cache  = bool
+  }))
 }
 
 variable "builder_compute_type" {

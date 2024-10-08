@@ -1,7 +1,11 @@
+variable "project_name" {
+  description = "Unique name for this project"
+  type        = string
+}
 
 variable "build_projects" {
   description = "List of Names of the CodeBuild projects to be created"
-  type        = list(string)
+  type        = set(string)
 }
 
 variable "kms_key_arn" {

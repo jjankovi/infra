@@ -1,9 +1,13 @@
 module "pipeline" {
-  source         = "../../../modules/iac_pipeline"
-  project_name   = "obi-iac"
-  environment    = "devops"
-  kms_enabled    = false
-  build_projects = ["scan", "plan", "apply"]
+  source       = "../../../modules/iac_pipeline"
+  project_name = "obi-iac"
+  environment  = "devops"
+  kms_enabled  = false
+  build_projects = [
+    { name = "scan", cache = false },
+    { name = "plan", cache = true },
+    { name = "apply", cache = true }
+  ]
   source_repo = {
     id             = "jjankovi/obi-iac",
     connection_arn = "arn:aws:codeconnections:eu-central-1:058264153756:connection/2fa2ed0c-0d42-4730-aaac-8b8453acbf44",

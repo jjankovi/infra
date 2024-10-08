@@ -8,7 +8,7 @@ resource "random_string" "bucket_suffix" {
 
 module buildspec_bucket {
   source = "../../../s3"
-  bucket_name = "codebuild-templates-${random_string.bucket_suffix.result}"
+  bucket_name = "${var.project_name}-codebuild-templates-${random_string.bucket_suffix.result}"
   bucket_versioning = true
 }
 
@@ -46,6 +46,6 @@ resource "aws_s3_object" "buildspec_validate" {
   key          = "buildspec_${each.key}.yml"
   content_type = "text/plain"
 
-  source       = "../../../modules/iac_pipeline/codebuild_buildspecs/buildspec_${each.key}.yml"
-  etag         = filemd5("../../../modules/iac_pipeline/codebuild_buildspecs/buildspec_${each.key}.yml")
+  source       = "../../../modules/iac_pipeline/modules/codebuild/templates/buildspec_${each.key}.yml"
+  etag         = filemd5("../../../modules/iac_pipeline/modules/codebuild/templates/buildspec_${each.key}.yml")
 }

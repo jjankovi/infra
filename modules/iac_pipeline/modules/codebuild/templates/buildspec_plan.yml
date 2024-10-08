@@ -3,10 +3,15 @@ version: 0.2
 phases:
   install:
     commands:
-      - wget https://releases.hashicorp.com/terraform/1.9.4/terraform_1.9.4_linux_amd64.zip
-      - unzip terraform_1.9.4_linux_amd64.zip
-      - sudo mv terraform /bin
-      - rm terraform_1.9.4_linux_amd64.zip
+      - if [ ! -f /usr/local/bin/terraform ]; then
+          echo "Downloading Terraform...";
+          wget https://releases.hashicorp.com/terraform/1.9.4/terraform_1.9.4_linux_amd64.zip;
+          unzip terraform_1.9.4_linux_amd64.zip;
+          mv terraform /usr/local/bin/;
+          rm terraform_1.9.4_linux_amd64.zip;
+        else
+          echo "Terraform binary found in cache.";
+        fi
 
   pre_build:
     commands:
@@ -28,6 +33,12 @@ phases:
   build:
     commands:
       - terraform plan -var-file="env/$ENVIRONMENT/$ENVIRONMENT.tfvars" -out=tfplan
+
+cache:
+  paths:
+    - '/usr/local/bin/terraform'
+    - '/root/.terraform/**/*'
+    - 'terraform.tfstate.d/**/*'
 
 artifacts:
   files:

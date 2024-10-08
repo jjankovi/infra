@@ -38,7 +38,10 @@ variable "stage_input" {
 
 variable "build_projects" {
   description = "Tags to be attached to the CodePipeline"
-  type        = list(string)
+  type = set(object({
+    name  = string
+    cache  = bool
+  }))
 }
 
 variable "target_accounts" {

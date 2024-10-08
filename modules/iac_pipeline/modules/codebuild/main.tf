@@ -1,9 +1,7 @@
-
 resource "aws_codebuild_project" "terraform_codebuild_project" {
+  for_each = { for project in var.build_projects : project.name => project }
 
-  count = length(var.build_projects)
-
-  name         = "${var.project_name}-${var.build_projects[count.index]}"
+  name         = "${var.project_name}-${each.value.name}"
   service_role = var.role_arn
   encryption_key = var.kms_enabled ? var.kms_key_arn : null
   tags = var.tags
@@ -12,10 +10,13 @@ resource "aws_codebuild_project" "terraform_codebuild_project" {
     type = var.build_project_source
   }
 
-  #  TODO JJA
-  #  cache {
-  #
-  #  }
+  dynamic "cache" {
+    for_each = each.value.cache ? [1] : []
+    content {
+      type = "S3"
+      location = var.cache_bucket
+    }
+  }
 
   environment {
     compute_type                = var.builder_compute_type
@@ -33,6 +34,6 @@ resource "aws_codebuild_project" "terraform_codebuild_project" {
 
   source {
     type      = var.build_project_source
-    buildspec = data.aws_s3_object.buildspec[var.build_projects[count.index]].body
+    buildspec = data.aws_s3_object.buildspec[each.value.name].body
   }
 }

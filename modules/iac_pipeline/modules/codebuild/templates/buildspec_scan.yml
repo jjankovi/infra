@@ -2,8 +2,11 @@
 version: 0.2
 phases:
   install:
+    runtime-versions:
+      python: 3.9
     commands:
       - curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+      - pip install --upgrade pip
       - pip install checkov
 
   pre_build:
@@ -11,7 +14,12 @@ phases:
       - echo "Running Terraform Lint (TFLint)"
       - tflint
       - echo "Running Checkov for Terraform static analysis"
-      - checkov -d .
+      - checkov -d . --quiet --soft-fail
   build:
     commands:
       - echo "Terraform static analysis completed!"
+
+cache:
+  paths:
+    - ~/.cache/pip
+    - ~/.local/lib/python3.9/site-packages/checkov

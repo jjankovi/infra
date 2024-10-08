@@ -25,11 +25,11 @@ output "kms_arn" {
 }
 
 output "s3_arn" {
-  value       = module.s3_artifacts_bucket.arn
+  value       = module.codebuild_artifacts_bucket.arn
   description = "The ARN of the S3 Bucket"
 }
 
 output "s3_bucket_name" {
-  value       = module.s3_artifacts_bucket.bucket
+  value       = module.codebuild_artifacts_bucket.bucket
   description = "The Name of the S3 Bucket"
 }
