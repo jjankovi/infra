@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    key     = "account.init.terraform.tfstate"
+    key     = "tf-state-setup.acc.terraform.tfstate"
     encrypt = true
   }
 }
@@ -8,6 +8,6 @@ terraform {
 provider "aws" {
   region = var.region
   assume_role {
-    role_arn = var.devops_role_arn
+    role_arn = var.terraform_provider_role
   }
 }

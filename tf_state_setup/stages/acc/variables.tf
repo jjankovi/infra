@@ -6,22 +6,21 @@ variable "region" {
 
 variable "state_bucket" {
   type        = string
-  description = "TODO"
+  description = "S3 bucket where Terraform states will be stored"
 }
 
 variable "state_lock_table" {
   type        = string
-  description = "TODO"
+  description = "DynamoDB table which will be used by Terraform for state lock"
 }
 
-
-variable "devops_role_arn" {
+variable "terraform_provider_role" {
   type        = string
   description = "Role used by Terraform to provision resources"
 }
 
-variable "workload_roles" {
+variable "state_access_iam_roles" {
   type        = list(string)
-  description = "TODO"
+  description = "List of IAM roles which will be assumed by Terraform"
 }
 
