@@ -1,0 +1,5 @@
+project_name = "obi"
+enviroment = "acc"
+terraform_provider_role = "arn:aws:iam::314146311773:role/obi-acc-terraform-role"
+devops_state_bucket = "obi-acc-terraform-state"
+devops_state_lock_table = "arn:aws:dynamodb:eu-central-1:248189918720:table/obi-acc-terraform-state-lock"
