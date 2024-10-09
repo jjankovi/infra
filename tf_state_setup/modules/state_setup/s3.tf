@@ -2,6 +2,16 @@ resource "aws_s3_bucket" "state_bucket" {
   bucket = var.state_bucket_name
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "state_bucket_encryption" {
+  bucket = aws_s3_bucket.state_bucket.bucket
+  rule {
+    bucket_key_enabled = true
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
 resource "aws_s3_bucket_public_access_block" "bucket_access" {
   bucket                  = aws_s3_bucket.state_bucket.id
   ignore_public_acls      = true
