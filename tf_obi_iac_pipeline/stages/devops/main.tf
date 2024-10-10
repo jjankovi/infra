@@ -70,20 +70,19 @@ resource "aws_s3_object" "codebuild_specs" {
   etag         = filemd5("${local.codebuild_spec_path}/buildspec_${each.key}.yml")
 }
 
-
 module "codebuild_terraform" {
   source = "../../../modules/codebuild_project"
   depends_on = [
     module.codebuild_spec_bucket,
     module.codebuild_cache_bucket
   ]
-  project_name     = var.project_name
-  role_arn         = local.cicd_role.arn
-  templates_bucket = module.codebuild_spec_bucket.bucket
-  cache_bucket     = module.codebuild_cache_bucket.bucket
-  build_projects   = local.codebuild_project_config
-  kms_enabled      = var.kms_enabled
-  kms_key_arn      = module.codepipeline_kms.arn
+  project_name             = var.project_name
+  role_arn                 = local.cicd_role.arn
+  templates_bucket         = module.codebuild_spec_bucket.bucket
+  cache_bucket             = module.codebuild_cache_bucket.bucket
+  codebuild_project_config = local.codebuild_project_config
+  kms_enabled              = var.kms_enabled
+  kms_key_arn              = module.codepipeline_kms.arn
 }
 
 module "codepipeline_kms" {
@@ -102,7 +101,6 @@ module "codepipeline_iam_role" {
   s3_bucket_arn           = module.codebuild_artifacts_bucket.arn
 }
 
-# Module for CodePipeline
 module "codepipeline_terraform" {
   source = "../../modules/codepipeline"
   depends_on = [

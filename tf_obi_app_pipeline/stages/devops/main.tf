@@ -75,12 +75,12 @@ module "codebuild_terraform" {
     module.codebuild_spec_bucket,
     data.aws_s3_object.codebuild_specs_data
   ]
-  project_name     = var.project_name
-  role_arn         = local.cicd_role.arn
-  templates_bucket = module.codebuild_spec_bucket.bucket
-  build_projects   = local.codebuild_project_config
-  kms_enabled      = var.kms_enabled
-  kms_key_arn      = module.codepipeline_kms.arn
+  project_name             = var.project_name
+  role_arn                 = local.cicd_role.arn
+  templates_bucket         = module.codebuild_spec_bucket.bucket
+  codebuild_project_config = local.codebuild_project_config
+  kms_enabled              = var.kms_enabled
+  kms_key_arn              = module.codepipeline_kms.arn
 }
 
 module "codepipeline_kms" {

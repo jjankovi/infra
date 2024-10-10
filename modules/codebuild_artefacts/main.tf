@@ -1,4 +1,3 @@
-#Artifact Bucket
 resource "random_string" "bucket_suffix" {
   length           = 16
   numeric         = true

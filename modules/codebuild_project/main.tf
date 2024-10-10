@@ -1,5 +1,5 @@
 resource "aws_codebuild_project" "terraform_codebuild_project" {
-  for_each = { for project in var.build_projects : project.name => project }
+  for_each = { for project in var.codebuild_project_config : project.name => project }
 
   name         = "${var.project_name}-${each.value.name}"
   service_role = var.role_arn

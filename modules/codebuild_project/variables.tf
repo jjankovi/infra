@@ -26,7 +26,7 @@ variable "tags" {
   default = {}
 }
 
-variable "build_projects" {
+variable "codebuild_project_config" {
   description = "TODO popis"
   type = set(object({
     name  = string
