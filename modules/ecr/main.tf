@@ -7,7 +7,7 @@ resource "aws_ecr_repository" "ecr_repo" {
   }
 }
 
-resource "aws_iam_policy" "ecr_repo_policy" {
+resource "aws_iam_policy" "full_access_policy" {
   name        = "${var.project_name}-image-repo-custom-policy"
 
   policy = jsonencode({
@@ -27,9 +27,11 @@ resource "aws_iam_policy" "ecr_repo_policy" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "codebuild_policy_attach" {
-  role       = var.cicd_role_name
-  policy_arn = aws_iam_policy.ecr_repo_policy.arn
+resource "aws_iam_role_policy_attachment" "full_access_policy_attach" {
+  for_each = var.full_access_roles
+
+  role    = each.key
+  policy_arn = aws_iam_policy.full_access_policy.arn
 }
 
 data "aws_iam_policy_document" "workload_accounts_policy_doc" {
@@ -39,7 +41,7 @@ data "aws_iam_policy_document" "workload_accounts_policy_doc" {
 
     principals {
       type        = "AWS"
-      identifiers = var.workload_accounts
+      identifiers = var.read_access_roles
     }
 
     actions = [

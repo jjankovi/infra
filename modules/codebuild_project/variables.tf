@@ -17,6 +17,7 @@ variable "templates_bucket" {
 variable "cache_bucket" {
   description = "Name of the S3 bucket used to store cache"
   type        = string
+  default = ""
 }
 
 variable "tags" {
@@ -26,7 +27,7 @@ variable "tags" {
 }
 
 variable "build_projects" {
-  description = "Tags to be attached to the CodePipeline"
+  description = "TODO popis"
   type = set(object({
     name  = string
     cache  = bool

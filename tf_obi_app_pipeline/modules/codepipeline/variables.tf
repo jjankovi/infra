@@ -48,6 +48,7 @@ variable "kms_enabled" {
 variable "tags" {
   description = "Tags to be attached to the CodePipeline"
   type        = map(any)
+  default = {}
 }
 
 variable "stages" {
