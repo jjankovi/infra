@@ -1,4 +1,3 @@
-
 resource "aws_codepipeline" "terraform_pipeline" {
 
   name          = "${var.project_name}"

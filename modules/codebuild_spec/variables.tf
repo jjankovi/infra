@@ -3,11 +3,6 @@ variable "project_name" {
   type        = string
 }
 
-variable "build_projects" {
-  description = "List of Names of the CodeBuild projects to be created"
-  type        = set(string)
-}
-
 variable "kms_key_arn" {
   description = "ARN of KMS key for encryption"
   type        = string

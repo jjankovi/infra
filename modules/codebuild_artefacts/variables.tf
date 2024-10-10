@@ -6,6 +6,7 @@ variable "project_name" {
 variable "tags" {
   description = "Tags to be associated with the S3 bucket"
   type        = map(any)
+  default = {}
 }
 
 variable "kms_key_arn" {

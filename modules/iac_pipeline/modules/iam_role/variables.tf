@@ -1,4 +1,3 @@
-
 variable "project_name" {
   description = "Unique name for this project"
   type        = string
@@ -17,6 +16,7 @@ variable "workload_roles" {
 variable "tags" {
   description = "Tags to be attached to the IAM Role"
   type        = map(any)
+  default = {}
 }
 
 variable "codestar_connection_arn" {

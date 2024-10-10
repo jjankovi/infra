@@ -1,77 +1,61 @@
-#Module for creating a new S3 bucket for storing pipeline artifacts
+locals {
+  codebuild_spec_path = "../../../modules/iac_pipeline/modules/codebuild_specs"
+}
+
 module "codebuild_artifacts_bucket" {
-  source                = "./modules/s3_codebuild_artefacts"
+  source                = "../codebuild_artefacts"
   project_name          = var.project_name
   kms_key_arn           = module.codepipeline_kms.arn
   kms_enabled = var.kms_enabled
   codepipeline_role_arn = var.cicd_role.arn
-  tags = {
-    Project_Name = var.project_name
-    Environment  = var.environment
-    Account_ID   = local.account_id
-    Region       = local.region
-  }
 }
 
 module "codebuild_cache_bucket" {
-  source                = "./modules/s3_codebuild_cache"
+  source                = "../codebuild_cache"
   project_name          = var.project_name
   kms_key_arn           = module.codepipeline_kms.arn
   kms_enabled = var.kms_enabled
   codepipeline_role_arn = var.cicd_role.arn
-  tags = {
-    Project_Name = var.project_name
-    Environment  = var.environment
-    Account_ID   = local.account_id
-    Region       = local.region
-  }
 }
 
-#Module for creating a new S3 bucket for storing codebuild buildspec
-module "codebuild_templates_bucket" {
-  source         = "./modules/s3_buildspec_templates"
-  build_projects = tolist([for project in var.build_projects : project.name])
+module "codebuild_spec_bucket" {
+  source         = "../codebuild_spec"
   project_name = var.project_name
   kms_key_arn    = module.codepipeline_kms.arn
   kms_enabled = var.kms_enabled
 }
 
-# Module for Infrastructure CodeBuild projects
+resource "aws_s3_object" "codebuild_specs" {
+  bucket   = module.codebuild_spec_bucket.bucket
+
+  for_each = tomap({ for project in var.build_projects : project.name => project })
+
+  key          = "buildspec_${each.key}.yml"
+  content_type = "text/plain"
+  source       = "${local.codebuild_spec_path}/buildspec_${each.key}.yml"
+  etag         = filemd5("${local.codebuild_spec_path}/buildspec_${each.key}.yml")
+}
+
+
 module "codebuild_terraform" {
-  source = "./modules/codebuild"
+  source = "../codebuild_project"
   depends_on = [
-    module.codebuild_templates_bucket,
+    module.codebuild_spec_bucket,
     module.codebuild_cache_bucket
   ]
   project_name                        = var.project_name
   role_arn                            = var.cicd_role.arn
-  templates_bucket                    = module.codebuild_templates_bucket.bucket
+  templates_bucket                    = module.codebuild_spec_bucket.bucket
   cache_bucket                        = module.codebuild_cache_bucket.bucket
   build_projects                      = var.build_projects
-  build_project_source                = var.build_project_source
-  builder_compute_type                = var.builder_compute_type
-  builder_image                       = var.builder_image
-  builder_image_pull_credentials_type = var.builder_image_pull_credentials_type
-  builder_type                        = var.builder_type
-  kms_key_arn                         = module.codepipeline_kms.arn
   kms_enabled = var.kms_enabled
-  tags = {
-    Project_Name = var.project_name
-    Environment  = var.environment
-    Account_ID   = local.account_id
-    Region       = local.region
-  }
+  kms_key_arn                         = module.codepipeline_kms.arn
 }
 
 module "codepipeline_kms" {
-  source                = "./modules/kms"
-  codepipeline_role_arn = var.cicd_role.arn
-  tags = {
-    Project_Name = var.project_name
-    Environment  = var.environment
-    Account_ID   = local.account_id
-    Region       = local.region
-  }
+  source                = "../kms"
+  kms_root_access = true
+  kms_access_roles = [var.cicd_role.arn]
 }
 
 module "codepipeline_iam_role" {
@@ -82,12 +66,6 @@ module "codepipeline_iam_role" {
   codestar_connection_arn    = var.source_repo.connection_arn
   kms_key_arn                = module.codepipeline_kms.arn
   s3_bucket_arn              = module.codebuild_artifacts_bucket.arn
-  tags = {
-    Project_Name = var.project_name
-    Environment  = var.environment
-    Account_ID   = local.account_id
-    Region       = local.region
-  }
 }
 
 # Module for CodePipeline

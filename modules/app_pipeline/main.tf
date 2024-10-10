@@ -7,7 +7,7 @@ module "ecr_repo" {
 
 #Module for creating a new S3 bucket for storing pipeline artifacts
 module "s3_artifacts_bucket" {
-  source                = "./modules/s3_codebuild_artefacts"
+  source                = "../codebuild_artefacts"
   project_name          = var.project_name
   kms_key_arn           = module.codepipeline_kms.arn
   kms_enabled = var.kms_enabled

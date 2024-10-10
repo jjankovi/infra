@@ -1,4 +1,3 @@
-
 variable "project_name" {
   description = "Unique name for this project"
   type        = string
@@ -23,6 +22,7 @@ variable "cache_bucket" {
 variable "tags" {
   description = "Tags to be applied to the codebuild project"
   type        = map(any)
+  default = {}
 }
 
 variable "build_projects" {
@@ -31,31 +31,6 @@ variable "build_projects" {
     name  = string
     cache  = bool
   }))
-}
-
-variable "builder_compute_type" {
-  description = "Information about the compute resources the build project will use"
-  type        = string
-}
-
-variable "builder_image" {
-  description = "Docker image to use for the build project"
-  type        = string
-}
-
-variable "builder_type" {
-  description = "Type of build environment to use for related builds"
-  type        = string
-}
-
-variable "builder_image_pull_credentials_type" {
-  description = "Type of credentials AWS CodeBuild uses to pull images in your build."
-  type        = string
-}
-
-variable "build_project_source" {
-  description = "Information about the build output artifact location"
-  type        = string
 }
 
 variable "kms_key_arn" {
@@ -67,4 +42,34 @@ variable "kms_enabled" {
   description = "Flag if kms encryption is enabled in all resources"
   type        = bool
   default     = true
+}
+
+variable "builder_compute_type" {
+  description = "Relative path to the Apply and Destroy build spec file"
+  type        = string
+  default     = "BUILD_GENERAL1_SMALL"
+}
+
+variable "builder_image" {
+  description = "Docker Image to be used by codebuild"
+  type        = string
+  default     = "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
+}
+
+variable "builder_type" {
+  description = "Type of codebuild run environment"
+  type        = string
+  default     = "LINUX_CONTAINER"
+}
+
+variable "builder_image_pull_credentials_type" {
+  description = "Image pull credentials type used by codebuild project"
+  type        = string
+  default     = "CODEBUILD"
+}
+
+variable "build_project_source" {
+  description = "aws/codebuild/standard:4.0"
+  type        = string
+  default     = "CODEPIPELINE"
 }
