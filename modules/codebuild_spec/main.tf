@@ -8,7 +8,7 @@ resource "random_string" "bucket_suffix" {
 module buildspec_bucket {
   source = "../s3"
   bucket_name = "${var.project_name}-codebuild-spec-${random_string.bucket_suffix.result}"
-  bucket_versioning = true
+  versioning_enabled = true
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "codepipeline_bucket_encryption" {

@@ -9,6 +9,7 @@ resource "random_string" "bucket_suffix" {
 module codepipeline_bucket {
   source = "../s3"
   bucket_name = "${lower(var.project_name)}-cache-${random_string.bucket_suffix.result}"
+  versioning_enabled = false
 }
 
 resource "aws_s3_bucket_policy" "bucket_policy_codepipeline_bucket" {
