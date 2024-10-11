@@ -1,4 +1,3 @@
-#Artifact Bucket
 resource "random_string" "bucket_suffix" {
   length           = 16
   numeric         = true
@@ -8,8 +7,9 @@ resource "random_string" "bucket_suffix" {
 
 module codepipeline_bucket {
   source = "../s3"
-  bucket_name = "${lower(var.project_name)}-cache-${random_string.bucket_suffix.result}"
+  bucket_name = "${lower(var.project_name)}-pipeline-cache-${random_string.bucket_suffix.result}"
   versioning_enabled = false
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_policy" "bucket_policy_codepipeline_bucket" {

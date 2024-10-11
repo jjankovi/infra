@@ -46,7 +46,7 @@ module "ecr_repo" {
 module "codebuild_artifacts_bucket" {
   source                = "../../../modules/codebuild_artefacts"
   project_name          = var.project_name
-  kms_key_arn           = module.codepipeline_kms.arn
+  kms_key_arn           = module.codepipeline_kms.key_arn
   kms_enabled           = var.kms_enabled
   codepipeline_role_arn = local.cicd_role.arn
 }
@@ -54,7 +54,7 @@ module "codebuild_artifacts_bucket" {
 module "codebuild_spec_bucket" {
   source       = "../../../modules/codebuild_spec"
   project_name = var.project_name
-  kms_key_arn  = module.codepipeline_kms.arn
+  kms_key_arn  = module.codepipeline_kms.key_arn
   kms_enabled  = var.kms_enabled
 }
 
@@ -80,7 +80,7 @@ module "codebuild_terraform" {
   templates_bucket         = module.codebuild_spec_bucket.bucket
   codebuild_project_config = local.codebuild_project_config
   kms_enabled              = var.kms_enabled
-  kms_key_arn              = module.codepipeline_kms.arn
+  kms_key_arn              = module.codepipeline_kms.key_arn
 }
 
 module "codepipeline_kms" {
@@ -95,7 +95,7 @@ module "codepipeline_iam_role" {
   cicd_role_name          = local.cicd_role.name
   deployer_roles          = tolist([for role in local.target_accounts : role.deployer_role])
   codestar_connection_arn = local.source_repo.connection_arn
-  kms_key_arn             = module.codepipeline_kms.arn
+  kms_key_arn             = module.codepipeline_kms.key_arn
   s3_bucket_arn           = module.codebuild_artifacts_bucket.arn
 }
 
@@ -116,6 +116,6 @@ module "codepipeline_terraform" {
   codepipeline_role_arn   = local.cicd_role.arn
   stages                  = local.codepipeline_stage_config
   target_accounts         = local.target_accounts
-  kms_key_arn             = module.codepipeline_kms.arn
+  kms_key_arn             = module.codepipeline_kms.key_arn
   kms_enabled             = var.kms_enabled
 }

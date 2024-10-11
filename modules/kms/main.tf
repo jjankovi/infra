@@ -3,11 +3,17 @@ locals {
 }
 
 resource "aws_kms_key" "encryption_key" {
-  deletion_window_in_days = 10
   policy                  = data.aws_iam_policy_document.kms_key_policy_doc.json
-  enable_key_rotation     = true
+  deletion_window_in_days  = var.deletion_window_in_days
+  enable_key_rotation      = var.enable_key_rotation
+
   tags                    = var.tags
 }
+
+#resource "aws_kms_alias" "default" {
+#  name          = var.alias
+#  target_key_id = join("", aws_kms_key.encryption_key.*.id)
+#}
 
 data "aws_iam_policy_document" "kms_key_policy_doc" {
 

@@ -7,7 +7,7 @@ resource "random_string" "bucket_suffix" {
 
 module codepipeline_bucket {
   source = "../s3"
-  bucket_name = "${lower(var.project_name)}-artefacts-${random_string.bucket_suffix.result}"
+  bucket_name = "${lower(var.project_name)}-pipeline-artefacts-${random_string.bucket_suffix.result}"
   versioning_enabled = false
 }
 
