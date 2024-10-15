@@ -17,8 +17,8 @@ locals {
   codebuild_project_config = [
     { name = "scan", cache = false },
     { name = "build", cache = false },
-    { name = "diff", cache = false },
-    { name = "deploy", cache = false }
+    { name = "diff", cache = true },
+    { name = "deploy", cache = true }
   ]
 
   codepipeline_stage_config = [
@@ -53,6 +53,14 @@ module "codebuild_artifacts_bucket" {
   codepipeline_role_arn = local.cicd_role.arn
 }
 
+module "codebuild_cache_bucket" {
+  source                = "../../../modules/codebuild_cache"
+  project_name          = var.project_name
+  kms_key_arn           = module.codepipeline_kms.key_arn
+  kms_enabled           = var.kms_enabled
+  codepipeline_role_arn = local.cicd_role.arn
+}
+
 module "codebuild_spec_bucket" {
   source       = "../../../modules/codebuild_spec"
   project_name = var.project_name
@@ -75,11 +83,13 @@ module "codebuild_terraform" {
   source = "../../../modules/codebuild_project"
   depends_on = [
     module.codebuild_spec_bucket,
+    module.codebuild_cache_bucket,
     data.aws_s3_object.codebuild_specs_data
   ]
   project_name             = var.project_name
   role_arn                 = local.cicd_role.arn
   templates_bucket         = module.codebuild_spec_bucket.bucket
+  cache_bucket             = module.codebuild_cache_bucket.bucket
   codebuild_project_config = local.codebuild_project_config
   kms_enabled              = var.kms_enabled
   kms_key_arn              = module.codepipeline_kms.key_arn

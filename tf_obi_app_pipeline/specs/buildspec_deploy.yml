@@ -3,10 +3,21 @@ version: 0.2
 phases:
   install:
     commands:
-      - curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl
-      - chmod +x ./kubectl && mv -f ./kubectl /usr/local/bin/kubectl
-      - wget https://get.helm.sh/helm-v3.16.1-linux-amd64.tar.gz -O helm.tar.gz; tar -xzf helm.tar.gz
-      - chmod +x ./linux-amd64/helm && mv ./linux-amd64/helm /usr/local/bin/helm
+      - if [ ! -f /usr/local/bin/kubectl ]; then
+          echo "Downloading kubectl...";
+          curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl;
+          chmod +x ./kubectl && mv -f ./kubectl /usr/local/bin/kubectl;
+        else
+          echo "kubectl binary found in cache.";
+        fi
+      - if [ ! -f /usr/local/bin/helm ]; then
+          echo "Downloading helm...";
+          wget https://get.helm.sh/helm-v3.16.1-linux-amd64.tar.gz -O helm.tar.gz; tar -xzf helm.tar.gz;
+          chmod +x ./linux-amd64/helm && mv ./linux-amd64/helm /usr/local/bin/helm;
+          helm plugin install https://github.com/databus23/helm-diff;
+        else
+          echo "helm binary found in cache.";
+        fi
   pre_build:
     commands:
       - export IMAGE_TAG=$(cat ../01/image_tag.txt)
@@ -24,4 +35,10 @@ phases:
       - aws eks --region eu-central-1 update-kubeconfig --name $EKS_CLUSTER
   build:
     commands:
-      - helm upgrade --namespace obi-ns obi k8s -f k8s/values.yaml -f k8s/values-$ENVIRONMENT.yaml --set image.tag=$IMAGE_TAG --install
+      - helm upgrade --namespace obi-ns obi k8s -f k8s/values.yaml -f k8s/values-$ENVIRONMENT.yaml --set image.tag=$IMAGE_TAG --install --wait
+
+cache:
+  paths:
+    - '/usr/local/bin/kubectl'
+    - '/usr/local/bin/helm'
+    - '/root/.local/share/helm/plugins/**/*'
