@@ -18,9 +18,13 @@ phases:
   post_build:
     commands:
       - docker push $ECR_REPO_URL:builder
-      - docker push $ECR_REPO_URL:latest
-      - docker push $ECR_REPO_URL:$CODEBUILD_BUILD_NUMBER
-      - echo "$CODEBUILD_BUILD_NUMBER" > image_tag.txt
+      - if grep -q "<failure" surefire-reports/*.xml; then
+          echo "Failed tests"
+        else
+          docker push $ECR_REPO_URL:latest;
+          docker push $ECR_REPO_URL:$CODEBUILD_BUILD_NUMBER;
+          echo "$CODEBUILD_BUILD_NUMBER" > image_tag.txt;
+        fi
 artifacts:
   files:
     - image_tag.txt
