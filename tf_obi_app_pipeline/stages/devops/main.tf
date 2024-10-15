@@ -34,13 +34,15 @@ locals {
       deployer_role = data.terraform_remote_state.dev_tier0.outputs.app_deployer_role_arn
     }
   ]
+
+  fargate_role = data.terraform_remote_state.dev_obi.outputs.fargate_role_arn
 }
 
 module "ecr_repo" {
   source            = "../../../modules/ecr"
   project_name      = var.project_name
-  full_access_roles = [local.cicd_role.name]
-  read_access_roles = toset([for target_account in local.target_accounts : target_account.deployer_role])
+  full_access_roles = [local.cicd_role.arn]
+  read_access_roles = [local.fargate_role]
 }
 
 module "codebuild_artifacts_bucket" {

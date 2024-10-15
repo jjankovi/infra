@@ -7,36 +7,22 @@ resource "aws_ecr_repository" "ecr_repo" {
   }
 }
 
-resource "aws_iam_policy" "full_access_policy" {
-  name        = "${var.project_name}-image-repo-custom-policy"
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = "ecr:GetAuthorizationToken",
-        Resource = "*"
-      },
-      {
-        Effect = "Allow",
-        Action = "ecr:*",
-        Resource = "${aws_ecr_repository.ecr_repo.arn}"
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "full_access_policy_attach" {
-  for_each = var.full_access_roles
-
-  role    = each.key
-  policy_arn = aws_iam_policy.full_access_policy.arn
-}
-
-data "aws_iam_policy_document" "workload_accounts_policy_doc" {
+data "aws_iam_policy_document" "ecr_policy_doc" {
   statement {
-    sid    = "new policy"
+    sid    = "Full access policy"
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = var.full_access_roles
+    }
+
+    actions = [
+      "ecr:*"
+    ]
+  }
+  statement {
+    sid    = "Read access policy"
     effect = "Allow"
 
     principals {
@@ -61,7 +47,7 @@ data "aws_iam_policy_document" "workload_accounts_policy_doc" {
   }
 }
 
-resource "aws_ecr_repository_policy" "workload_accounts_policy" {
+resource "aws_ecr_repository_policy" "ecr_policy" {
   repository = aws_ecr_repository.ecr_repo.name
-  policy     = data.aws_iam_policy_document.workload_accounts_policy_doc.json
+  policy     = data.aws_iam_policy_document.ecr_policy_doc.json
 }
