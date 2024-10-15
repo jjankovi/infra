@@ -9,21 +9,24 @@ phases:
   build:
     commands:
       - docker build -t $ECR_REPO_URL:builder --target builder --cache-from $ECR_REPO_URL:builder .
-      - docker build -t $ECR_REPO_URL:latest -t $ECR_REPO_URL:$CODEBUILD_BUILD_NUMBER --cache-from $ECR_REPO_URL:builder --cache-from $ECR_REPO_URL:latest .
-      - echo "$CODEBUILD_BUILD_NUMBER" > image_tag.txt
+      - docker cp $(docker create $ECR_REPO_URL:builder):/usr/app/target/surefire-reports surefire-reports
+      - if grep -q "<failure" surefire-reports/*.xml; then
+          exit 1;
+        else
+          docker build -t $ECR_REPO_URL:latest -t $ECR_REPO_URL:$CODEBUILD_BUILD_NUMBER --cache-from $ECR_REPO_URL:builder --cache-from $ECR_REPO_URL:latest . ;
+        fi
   post_build:
     commands:
+      - docker push $ECR_REPO_URL:builder
       - docker push $ECR_REPO_URL:latest
       - docker push $ECR_REPO_URL:$CODEBUILD_BUILD_NUMBER
-      - docker push $ECR_REPO_URL:builder
-
+      - echo "$CODEBUILD_BUILD_NUMBER" > image_tag.txt
 artifacts:
   files:
     - image_tag.txt
 
 reports:
-  SurefireReports:
-    base-directory: 'reports'
+  junit:
     files:
-      - '**/*'
+      - surefire-reports/*.xml
 
