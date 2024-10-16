@@ -120,7 +120,7 @@ variable "allow_major_version_upgrade" {
 
 variable "backup_retention_period" {
   type        = number
-  default     = 0
+  default     = 35
   description = "Backup retention period in days. Must be > 0 to enable backups"
 }
 
@@ -140,7 +140,7 @@ variable "db_parameter" {
   description = "A list of DB parameters to apply. Note that parameters may differ from a DB family to another"
 }
 
-variable "kms_key_arn" {
+variable "storage_kms_key_arn" {
   type        = string
   default     = ""
   description = "The ARN of the existing KMS key to encrypt storage"
@@ -154,12 +154,18 @@ variable "parameter_group_name" {
 
 variable "performance_insights_enabled" {
   type        = bool
-  default     = false
+  default     = true
   description = "Specifies whether Performance Insights are enabled."
+}
+
+variable "performance_insights_kms_key_arn" {
+  type        = string
+  default     = ""
+  description = "The ARN of the existing KMS key to encrypt performance insights"
 }
 
 variable "enabled_cloudwatch_logs_exports" {
   type        = list(string)
-  default     = []
+  default     = ["general", "error", "slowquery"]
   description = "List of log types to enable for exporting to CloudWatch logs. If omitted, no logs will be exported. Valid values (depending on engine): alert, audit, error, general, listener, slowquery, trace, postgresql (PostgreSQL), upgrade (PostgreSQL)."
 }

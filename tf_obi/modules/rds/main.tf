@@ -10,7 +10,7 @@ resource "aws_db_instance" "default" {
   allocated_storage    = var.allocated_storage
   max_allocated_storage = var.max_allocated_storage
   storage_encrypted = var.storage_encrypted
-  kms_key_id = var.kms_key_arn
+  kms_key_id = var.storage_kms_key_arn
   manage_master_user_password   = var.database_password != null ? null : false
 
   vpc_security_group_ids = compact(
@@ -30,9 +30,13 @@ resource "aws_db_instance" "default" {
   backup_retention_period     = var.backup_retention_period
   backup_window               = var.backup_window
   performance_insights_enabled          = var.performance_insights_enabled
+  performance_insights_kms_key_id = var.performance_insights_kms_key_arn
 
   publicly_accessible = false
   skip_final_snapshot  = true
+  copy_tags_to_snapshot = true
+
+  deletion_protection  = true
 
   depends_on = [
     aws_db_subnet_group.default,

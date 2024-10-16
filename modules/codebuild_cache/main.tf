@@ -45,7 +45,7 @@ data "aws_iam_policy_document" "bucket_policy_doc_codepipeline_bucket" {
 resource "aws_s3_bucket_ownership_controls" "codepipeline_bucket_ownership" {
   bucket = module.codepipeline_bucket.bucket
   rule {
-    object_ownership = "BucketOwnerPreferred"
+    object_ownership = "BucketOwnerEnforced"
   }
 }
 
