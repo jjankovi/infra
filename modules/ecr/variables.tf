@@ -6,9 +6,11 @@ variable "project_name" {
 variable "full_access_roles" {
   description = "ARN of the roles which have full access to ECR"
   type        = set(string)
+  default = []
 }
 
 variable "read_access_roles" {
   description = "ARN of the roles which have read access to ECR"
   type        = set(string)
+  default = []
 }

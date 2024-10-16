@@ -21,29 +21,30 @@ data "aws_iam_policy_document" "ecr_policy_doc" {
       "ecr:*"
     ]
   }
-  statement {
-    sid    = "Read access policy"
-    effect = "Allow"
-
-    principals {
-      type        = "AWS"
-      identifiers = var.read_access_roles
+  dynamic "statement" {
+    for_each = length(var.read_access_roles) > 0 ? [1] : []
+    content {
+      sid    = "Read access policy"
+      effect = "Allow"
+      actions = [
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:GetRepositoryPolicy",
+        "ecr:DescribeRepositories",
+        "ecr:ListImages",
+        "ecr:DescribeImages",
+        "ecr:BatchGetImage",
+        "ecr:GetLifecyclePolicy",
+        "ecr:GetLifecyclePolicyPreview",
+        "ecr:ListTagsForResource",
+        "ecr:DescribeImageScanFindings"
+      ]
+      principals {
+        type        = "AWS"
+        identifiers = var.read_access_roles
+      }
     }
-
-    actions = [
-      "ecr:GetAuthorizationToken",
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:GetRepositoryPolicy",
-      "ecr:DescribeRepositories",
-      "ecr:ListImages",
-      "ecr:DescribeImages",
-      "ecr:BatchGetImage",
-      "ecr:GetLifecyclePolicy",
-      "ecr:GetLifecyclePolicyPreview",
-      "ecr:ListTagsForResource",
-      "ecr:DescribeImageScanFindings"
-    ]
   }
 }
 
