@@ -68,7 +68,7 @@ resource "aws_db_subnet_group" "default" {
 
 resource "aws_security_group" "default" {
   name        = "${var.database_name}-${var.enviroment}-rds-sg"
-  description = "Allow inbound traffic from the security groups"
+  description = "RDS base security group"
   vpc_id      = data.aws_vpc.default.id
 }
 

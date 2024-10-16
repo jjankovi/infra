@@ -39,16 +39,6 @@ variable "database_port" {
   description = "Database port (_e.g._ `3306` for `MySQL`). Used in the DB Security Group to allow access to the DB instance from the provided `security_group_ids`"
 }
 
-variable "schemas" {
-  type = list(object({
-    schema_name    = string
-    owner_name      = string
-    owner_password  = string
-  }))
-  default     = []
-  description = "A list of DB schemas with owner user"
-}
-
 variable "multi_az" {
   type        = bool
   default     = false
