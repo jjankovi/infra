@@ -8,6 +8,6 @@ resource "aws_ssm_parameter" "app_parameters" {
 
   tags = {
     Application = var.project_name
-    Environment = var.enviroment
+    Environment = var.environment
   }
 }

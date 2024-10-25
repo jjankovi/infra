@@ -1,5 +1,5 @@
 resource "aws_iam_role" "pipeline_role" {
-  name                = "${var.project_name}-${var.enviroment}-pipeline-role"
+  name                = "${var.project_name}-${var.environment}-pipeline-role"
   assume_role_policy  = data.aws_iam_policy_document.pipeline_terraform_assume_policy_document.json
 }
 

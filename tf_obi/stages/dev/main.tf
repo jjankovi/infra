@@ -1,14 +1,15 @@
-module "eks_cluster" {
-  source        = "../../modules/eks"
-  project_name  = "obi"
-  enviroment    = "dev"
-  k8s_namespace = "obi-ns"
+module "iam_app" {
+  source        = "../../modules/iam"
+  project_name = ""
+  oidc_provider_id = ""
+  k8s_app_namespace = ""
+  k8s_app_sa_name = ""
 }
 
 module "app_parameters" {
   source       = "../../modules/parameters"
   project_name = "obi"
-  enviroment   = "dev"
+  environment   = "dev"
   app_parameters = [
     {
       name        = "TEST_URL"
@@ -28,7 +29,7 @@ module "app_parameters" {
 #module "rds" {
 #  source            = "../../modules/rds"
 #  project_name      = "obi"
-#  enviroment        = "dev"
+#  environment        = "dev"
 #  high_availability = false
 #  admin_username    = "superuser"
 #  admin_password    = "supersecretpassword"
@@ -46,7 +47,7 @@ resource "aws_secretsmanager_secret_version" "db_password_secret_version" {
 module "rds" {
   source            = "../../modules/rds"
   database_name     = "obi"
-  enviroment        = "dev"
+  environment        = "dev"
   database_user     = "superuser"
   database_password = aws_secretsmanager_secret_version.db_password_secret_version.secret_string
   schemas = [

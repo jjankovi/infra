@@ -3,7 +3,7 @@ resource "aws_db_instance" "postgres" {
   engine               = "postgres"
   engine_version       = "16.3"
   instance_class       = "db.t3.micro"
-  identifier           = "${var.project_name}-${var.enviroment}-db"
+  identifier           = "${var.project_name}-${var.environment}-db"
   db_name              = "${var.project_name}"
   username             = var.admin_username
   password             = var.admin_password
@@ -19,6 +19,6 @@ resource "aws_db_instance" "postgres" {
 }
 
 resource "aws_db_subnet_group" "subnet_group" {
-  name       = "${var.project_name}-${var.enviroment}-db-subnet-group"
+  name       = "${var.project_name}-${var.environment}-db-subnet-group"
   subnet_ids = local.private_subnet_ids
 }

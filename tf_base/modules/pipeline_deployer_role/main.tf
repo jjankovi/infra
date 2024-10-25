@@ -1,5 +1,5 @@
 resource "aws_iam_role" "pipeline_deployer_role" {
-  name                = "${var.project_name}-${var.enviroment}-pipeline-deployer-role"
+  name                = "${var.project_name}-${var.environment}-pipeline-deployer-role"
   assume_role_policy  = data.aws_iam_policy_document.pipeline_deployer_assume_policy_document.json
 }
 

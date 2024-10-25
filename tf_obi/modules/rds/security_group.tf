@@ -1,5 +1,5 @@
 resource "aws_security_group" "rds_sg" {
-  name        = "${var.project_name}-${var.enviroment}-rds-sg"
+  name        = "${var.project_name}-${var.environment}-rds-sg"
   description = "Allow PostgreSQL inbound traffic"
   vpc_id      = data.aws_vpc.default.id
 
