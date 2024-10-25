@@ -32,20 +32,25 @@ data "aws_iam_policy_document" "kms_key_policy_doc" {
     }
   }
 
-  statement {
-    sid    = "Allow use of the key"
-    effect = "Allow"
-    actions = [
-      "kms:Encrypt",
-      "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey"
-    ]
-    resources = ["*"]
-    principals {
-      type = "AWS"
-      identifiers = var.kms_access_roles
+  dynamic "statement" {
+    for_each = length(var.kms_access_roles) > 0 ? [1] : []
+
+    content {
+      sid    = "Allow use of the key"
+      effect  = "Allow"
+      actions = [
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey"
+      ]
+      resources = ["*"]
+      principals {
+        type = "AWS"
+        identifiers = var.kms_access_roles
+      }
     }
   }
+
 }

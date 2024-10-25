@@ -1,5 +1,12 @@
+data "aws_s3_object" "buildspec" {
+  for_each = toset([for project in var.codebuild_projects_config : project.name])
+
+  bucket = var.templates_bucket
+  key    = "buildspec_${each.value}.yml"
+}
+
 resource "aws_codebuild_project" "terraform_codebuild_project" {
-  for_each = { for project in var.codebuild_project_config : project.name => project }
+  for_each = { for project in var.codebuild_projects_config : project.name => project }
 
   name         = "${var.project_name}-${each.value.name}"
   service_role = var.role_arn
@@ -28,7 +35,7 @@ resource "aws_codebuild_project" "terraform_codebuild_project" {
 
   logs_config {
     cloudwatch_logs {
-      status = "ENABLED"
+      status =  each.value.log_enabled ? "ENABLED" : "DISABLED"
     }
   }
 

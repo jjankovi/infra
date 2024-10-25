@@ -26,11 +26,12 @@ variable "tags" {
   default = {}
 }
 
-variable "codebuild_project_config" {
-  description = "TODO popis"
-  type = set(object({
+variable "codebuild_projects_config" {
+  description = "Codebuild projects configuration"
+  type = list(object({
     name  = string
     cache  = bool
+    log_enabled = bool
   }))
 }
 

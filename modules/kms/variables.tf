@@ -24,6 +24,7 @@ variable "kms_root_access" {
 variable "kms_access_roles" {
   description = "Roles which have usage access to KMS key"
   type        = list(string)
+  default = []
 }
 
 variable "tags" {

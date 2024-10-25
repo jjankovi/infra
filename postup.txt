@@ -14,13 +14,9 @@ CSOB DEVOPS
 1. pustim tf_state_setup (najprv rucne, potom to naparujem na s3 a dynamo) - pre vsetky 4 accounty. Tento projekt
 vytvara s3 bucket a dynamodb pre terraform state. - pusta sa len v cicd accounte
     - ako state access budu crossaccount roly z workload uctov
-2. pustim tf_base - pojde v nom o vytvorenie roli ktore budu potrebne dalej, bude to jeden projekt ale devops bude mat
-iny content ako workloady, pretoze tie potrebuju aj app deployer - budem to riadit premennymi
-3. bod 2 vytvara roly (terraform rolu pre codebuild) ktoru pridam do state_access_iam_roles v tf_state_setup
-4. pustim tf_obi_iac_pipeline
-5. pustim tf_obi_app_pipeline
-
-
+2. vytvorim a spustim codepipeline iac pre platformu
+3. vytvorim a spustim codepipeline pre iac pre obi
+4. vytvorim a spustim codepipeline pre obi application deployment
 
 moduly ktore vytvorim
 - label module (uz som si pridal ten z cloudfare)
