@@ -5,22 +5,27 @@ locals {
 # IAM Role for the ALB Ingress Controller
 resource "aws_iam_role" "alb_ingress_role" {
   name = "${var.project_name}-alb-ingress-controller-role"
+  assume_role_policy  = data.aws_iam_policy_document.alb_ingress_role_assume_doc.json
+}
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      Principal = {
-        Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider_id}"
-      }
-      Action = "sts:AssumeRoleWithWebIdentity"
-      Condition = {
-        StringEquals = {
-          "${local.oidc_provider_id}:sub" = "system:serviceaccount:kube-system:${local.ingress_service_account_name}"
-        }
-      }
-    }]
-  })
+data "aws_iam_policy_document" "alb_ingress_role_assume_doc" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    principals {
+      type        = "Federated"
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider_id}"
+      ]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "${local.oidc_provider_id}:sub"
+
+      values = [
+        "system:serviceaccount:kube-system:${local.ingress_service_account_name}"
+      ]
+    }
+  }
 }
 
 # Kubernetes service account for ALB Ingress Controller

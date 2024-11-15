@@ -46,18 +46,21 @@ resource "aws_iam_policy" "fargate_cloudwatch_policy" {
 
 resource "aws_iam_role" "fargate_kube" {
   name = "${var.project_name}-eks-fargate-kube-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Principal = {
-        Service = "eks-fargate-pods.amazonaws.com"
-      }
-      Effect = "Allow"
-    }]
-  })
+  assume_role_policy  = data.aws_iam_policy_document.fargate_kube_assume_doc.json
 }
+
+data "aws_iam_policy_document" "fargate_kube_assume_doc" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = [
+        "eks-fargate-pods.amazonaws.com"
+      ]
+    }
+  }
+}
+
 
 resource "aws_iam_role_policy_attachment" "fargate_kube_cloudwatch_policy" {
   role       = aws_iam_role.fargate_kube.name
@@ -71,17 +74,19 @@ resource "aws_iam_role_policy_attachment" "fargate_kube_pod_execution_policy" {
 
 resource "aws_iam_role" "fargate_app" {
   name = "${var.project_name}-eks-fargate-app-role"
+  assume_role_policy  = data.aws_iam_policy_document.fargate_app_assume_doc.json
+}
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Principal = {
-        Service = "eks-fargate-pods.amazonaws.com"
-      }
-      Effect = "Allow"
-    }]
-  })
+data "aws_iam_policy_document" "fargate_app_assume_doc" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = [
+        "eks-fargate-pods.amazonaws.com"
+      ]
+    }
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "fargate_kube_cloudwatch_policy" {

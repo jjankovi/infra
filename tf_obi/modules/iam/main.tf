@@ -1,23 +1,29 @@
 # IAM execution role for the application
 resource "aws_iam_role" "app_execution_role" {
   name = "${var.project_name}-execution-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      Principal = {
-        Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${var.oidc_provider_id}"
-      }
-      Action = "sts:AssumeRoleWithWebIdentity"
-      "Condition": {
-        "StringEquals": {
-          "${var.oidc_provider_id}:sub": "system:serviceaccount:${var.k8s_app_namespace}:${var.k8s_app_sa_name}"
-        }
-      }
-    }]
-  })
+  assume_role_policy  = data.aws_iam_policy_document.app_execution_role_assume_doc.json
 }
+
+data "aws_iam_policy_document" "app_execution_role_assume_doc" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    principals {
+      type        = "Federated"
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${var.oidc_provider_id}"
+      ]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "${var.oidc_provider_id}:sub"
+
+      values = [
+        "system:serviceaccount:${var.k8s_app_namespace}:${var.k8s_app_sa_name}"
+      ]
+    }
+  }
+}
+
 
 # Access to parameter store for application
 resource "aws_iam_policy" "ssm_parameter_policy" {

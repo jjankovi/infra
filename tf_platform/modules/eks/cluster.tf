@@ -20,17 +20,19 @@ resource "kubernetes_namespace" "app_namespace" {
 
 resource "aws_iam_role" "eks_cluster" {
   name = "${var.project_name}-eks-cluster-role"
+  assume_role_policy  = data.aws_iam_policy_document.eks_cluster_assume_doc.json
+}
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Principal = {
-        Service = "eks.amazonaws.com"
-      }
-      Effect = "Allow"
-    }]
-  })
+data "aws_iam_policy_document" "eks_cluster_assume_doc" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = [
+        "eks.amazonaws.com"
+      ]
+    }
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "eks_cluster_policy_attachment" {
