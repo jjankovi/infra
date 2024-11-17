@@ -23,24 +23,31 @@ resource "aws_kms_key_policy" "state_lock_table_kms_access" {
     "Version" : "2012-10-17",
     "Statement" : [
       {
-        "Effect" : "Allow",
-        "Principal" : {
-          "AWS" : var.state_access_iam_roles
+        "Sid": "Default permission for root user",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "arn:aws:iam::058264153756:root"
         },
-        "Resource" : aws_dynamodb_table.state_lock_table.arn,
-        "Action" : [
-          "kms:Encrypt",
-          "kms:Decrypt",
-          "kms:ReEncrypt*",
-          "kms:GenerateDataKey*",
-          "kms:DescribeKey"
-        ],
-        "Resource" : aws_dynamodb_table.state_lock_table.arn,
-        "Condition" : {
-          "StringEquals" : {
-            "kms:ViaService" : "dynamodb.${local.region}.amazonaws.com"
-          }
-        }
+        "Action": ["kms:*"],
+        "Resource": "*"
+      },
+      {
+        "Sid": "Default permission for L3 role",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "arn:aws:iam::058264153756:role/obi-devops-terraform-role"
+        },
+        "Action": ["kms:*"],
+        "Resource": "*"
+      },
+      {
+        "Sid": "Permission for basic operator role",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "arn:aws:iam::058264153756:user/Administrator"
+        },
+        "Action": ["kms:Decrypt"],
+        "Resource": "*"
       }
     ]
   })
