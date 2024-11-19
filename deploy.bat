@@ -9,6 +9,7 @@ set VAR_PATH="%CD%/%PROJECT%/env/%ENV%/%ENV%.tfvars"
 
 terraform -chdir=%TERRAFORM_PATH% fmt -recursive
 terraform -chdir=%TERRAFORM_PATH% init -backend-config=%CUSTOMER_BACKEND_PATH% -upgrade -migrate-state
+@REM terraform -chdir=%TERRAFORM_PATH% init
 terraform -chdir=%TERRAFORM_PATH% apply -var-file=%VAR_PATH% -parallelism=2
 
 

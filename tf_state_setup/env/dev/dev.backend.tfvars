@@ -1,3 +1,3 @@
-bucket         = "obi-dev-terraform-state"
-dynamodb_table = "obi-dev-terraform-state-lock"
+bucket         = "csob-dev-obi-tfstate"
+dynamodb_table = "csob-dev-obi-tfstate"
 region  = "eu-central-1"

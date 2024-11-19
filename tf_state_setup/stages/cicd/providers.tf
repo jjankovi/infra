@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    key     = "tf-state-setup.dev.terraform.tfstate"
+    key     = "tf-state-setup.cicd.terraform.tfstate"
     encrypt = true
   }
 }

@@ -1,5 +1,6 @@
 resource "aws_dynamodb_table" "state_lock_table" {
-  name     = var.state_dynamodb_table_name
+  name     = module.label.id
+  tags = module.label.tags
   hash_key = "LockID"
 
   billing_mode = "PAY_PER_REQUEST"
