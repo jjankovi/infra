@@ -35,13 +35,17 @@ resource "aws_kms_key_policy" "state_lock_table_kms_access" {
       {
         "Sid": "Permission for state access IAM roles",
         "Effect" : "Allow",
+        "Action" : [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ],
         "Principal" : {
           "AWS" : var.state_access_iam_roles
         },
-        "Resource" : aws_dynamodb_table.state_lock_table.arn,
-        "Action" : [
-          "kms:*"
-        ]
+        "Resource" : "*",
       }
     ]
   })
