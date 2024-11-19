@@ -1,32 +1,36 @@
-variable "environment" {
-  description = "Environment"
-  type        = string
-  default = "dev"
+variable "aws_namespace" {
+  type    = string
+  default = null
 }
 
-variable "project_name" {
-  description = "Unique name for this project"
-  type        = string
+variable "aws_environment" {
+  type    = string
+  default = null
 }
 
-variable "terraform_provider_role" {
-  type        = string
-  description = "Role used by Terraform to provision resources"
+variable "aws_component" {
+  type    = string
+  default = null
+}
+
+variable "aws_attributes" {
+  type    = list(string)
+  default = []
 }
 
 variable "region" {
-  type        = string
-  default     = "eu-central-1"
+  type    = string
+  default = "eu-central-1"
 }
 
 variable "k8s_app_namespace" {
-  type        = string
+  type = string
 }
 
 variable "eks_admin_roles" {
-  type        = list(string)
+  type = list(string)
 }
 
 variable "private_subnet_ids" {
-  type        = list(string)
+  type = list(string)
 }

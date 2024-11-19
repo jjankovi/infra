@@ -1,6 +1,6 @@
 resource "aws_eks_addon" "coredns" {
   depends_on = [
-    aws_eks_fargate_profile.fargate_profile,
+    aws_eks_fargate_profile.kube,
     kubernetes_config_map.cloudwatch_config_map
   ]
   cluster_name                = aws_eks_cluster.this.name

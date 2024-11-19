@@ -1,5 +1,6 @@
 resource "aws_eks_cluster" "this" {
-  name     = "${var.project_name}-${var.environment}-cluster"
+  name     = module.label.id
+  tags = module.label.tags
   role_arn = aws_iam_role.eks_cluster.arn
 
   vpc_config {
@@ -19,8 +20,9 @@ resource "kubernetes_namespace" "app_namespace" {
 }
 
 resource "aws_iam_role" "eks_cluster" {
-  name = "${var.project_name}-eks-cluster-role"
+  name = "${module.label.id}-eks-cluster-role"
   assume_role_policy  = data.aws_iam_policy_document.eks_cluster_assume_doc.json
+  tags = module.label.tags
 }
 
 data "aws_iam_policy_document" "eks_cluster_assume_doc" {

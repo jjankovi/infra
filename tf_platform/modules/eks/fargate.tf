@@ -1,6 +1,7 @@
 resource "aws_eks_fargate_profile" "kube" {
   cluster_name = aws_eks_cluster.this.name
-  fargate_profile_name = "${var.project_name}-kube-profile"
+  fargate_profile_name = "${module.label.id}-kube-profile"
+  tags = module.label.tags
 
   pod_execution_role_arn = aws_iam_role.fargate_kube.arn
 
@@ -16,7 +17,8 @@ resource "aws_eks_fargate_profile" "app" {
     kubernetes_namespace.app_namespace
   ]
   cluster_name = aws_eks_cluster.this.name
-  fargate_profile_name = "${var.project_name}-app-profile"
+  fargate_profile_name = "${module.label.id}-app-profile"
+  tags = module.label.tags
 
   pod_execution_role_arn = aws_iam_role.fargate_app.arn
 
@@ -45,7 +47,8 @@ resource "aws_iam_policy" "fargate_cloudwatch_policy" {
 }
 
 resource "aws_iam_role" "fargate_kube" {
-  name = "${var.project_name}-eks-fargate-kube-role"
+  name = "${module.label.id}-eks-fargate-kube-role"
+  tags = module.label.tags
   assume_role_policy  = data.aws_iam_policy_document.fargate_kube_assume_doc.json
 }
 
@@ -61,7 +64,6 @@ data "aws_iam_policy_document" "fargate_kube_assume_doc" {
   }
 }
 
-
 resource "aws_iam_role_policy_attachment" "fargate_kube_cloudwatch_policy" {
   role       = aws_iam_role.fargate_kube.name
   policy_arn = aws_iam_policy.fargate_cloudwatch_policy.arn
@@ -73,7 +75,8 @@ resource "aws_iam_role_policy_attachment" "fargate_kube_pod_execution_policy" {
 }
 
 resource "aws_iam_role" "fargate_app" {
-  name = "${var.project_name}-eks-fargate-app-role"
+  name = "${module.label.id}-eks-fargate-app-role"
+  tags = module.label.tags
   assume_role_policy  = data.aws_iam_policy_document.fargate_app_assume_doc.json
 }
 
@@ -89,12 +92,12 @@ data "aws_iam_policy_document" "fargate_app_assume_doc" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "fargate_kube_cloudwatch_policy" {
+resource "aws_iam_role_policy_attachment" "fargate_app_cloudwatch_policy" {
   role       = aws_iam_role.fargate_app.name
   policy_arn = aws_iam_policy.fargate_cloudwatch_policy.arn
 }
 
-resource "aws_iam_role_policy_attachment" "fargate_kube_pod_execution_policy" {
+resource "aws_iam_role_policy_attachment" "fargate_app_pod_execution_policy" {
   role       = aws_iam_role.fargate_app.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
 }
