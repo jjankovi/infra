@@ -1,21 +1,23 @@
-variable "aws_namespace" {
-  type    = string
-  default = null
+variable "namespace" {
+  type        = string
+  default     = null
+  description = "ID element. Usually an abbreviation of your organization name, e.g. 'eg' or 'cp', to help ensure generated IDs are globally unique"
 }
 
-variable "aws_environment" {
-  type    = string
-  default = null
+variable "stage" {
+  type        = string
+  default     = null
+  description = "ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release'"
 }
 
-variable "aws_component" {
-  type    = string
-  default = null
-}
-
-variable "aws_attributes" {
-  type    = list(string)
-  default = []
+variable "name" {
+  type        = string
+  default     = null
+  description = <<-EOT
+    ID element. Usually the component or solution name, e.g. 'app' or 'jenkins'.
+    This is the only ID element not also included as a `tag`.
+    The "name" tag is set to the full `id` string. There is no tag with the value of the `name` input.
+    EOT
 }
 
 variable "region" {

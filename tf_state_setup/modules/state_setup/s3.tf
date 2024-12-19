@@ -1,6 +1,6 @@
 resource "aws_s3_bucket" "state_bucket" {
-  bucket = module.label.id
-  tags = module.label.tags
+  bucket = module.this.id
+  tags = module.this.tags
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "state_bucket_encryption" {

@@ -1,8 +1,3 @@
-variable "bucket_name" {
-  description = "Unique name for S3 bucket"
-  type        = string
-}
-
 variable "force_destroy" {
   type        = bool
   default     = false

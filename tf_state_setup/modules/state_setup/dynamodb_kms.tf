@@ -10,11 +10,11 @@ resource "aws_kms_key" "state_lock_table_key" {
   description             = "This key is used to encrypt dynamodb tables"
   deletion_window_in_days = 10
   enable_key_rotation     = true
-  tags = module.label.tags
+  tags = module.this.tags
 }
 
 resource "aws_kms_alias" "state_lock_table_key_alias" {
-  name          = "alias/${module.label.id}-key-alias"
+  name          = "alias/${module.this.id}-key-alias"
   target_key_id = aws_kms_key.state_lock_table_key.id
 }
 

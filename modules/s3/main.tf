@@ -1,5 +1,6 @@
 resource "aws_s3_bucket" "default" {
-  bucket = var.bucket_name
+  bucket = module.this.id
+  tags = module.this.tags
   force_destroy = var.force_destroy
 }
 
